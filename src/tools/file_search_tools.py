@@ -7,6 +7,8 @@ sys.path.append(str(Path(__file__).parent.parent))
 from utils.directory_scanning import DirectoryScanner
 
 
+from src.utils.config_loader import load_config
+
 @tool
 def find_folder_from_name(folder_name: str) -> dict:
     """
@@ -23,7 +25,10 @@ def find_folder_from_name(folder_name: str) -> dict:
             - tree_structure: Tree representation of the project structure
             - success: Boolean indicating if the folder was found
     """
-    scanner = DirectoryScanner(root_dir=Path('/home/petar/Documents'))
+
+    config= load_config()
+    print(config.files_agent.root_directory)
+    scanner = DirectoryScanner(root_dir=Path(config.files_agent.root_directory))
     found_folder = scanner.find_folder(folder_name)
     
     if not found_folder:

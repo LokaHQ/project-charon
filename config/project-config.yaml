@@ -1,0 +1,5 @@
+files_agent:
+  root_directory: "/home/petar/Documents"
+  model:
+    model_id: "openrouter/deepseek/deepseek-r1"
+    api_key_env: "OPENROUTER_API_KEY"

@@ -1,0 +1,57 @@
+from strands import tool
+from pathlib import Path
+import sys
+import subprocess
+
+sys.path.append(str(Path(__file__).parent.parent))
+from utils.directory_scanning import DirectoryScanner
+
+
+@tool
+def find_folder_from_name(folder_name: str) -> dict:
+    """
+    Find a folder by its name in the project root directory, and all python files in it.
+    
+    Args:
+        folder_name (str): The name of the project and folder to find.
+        
+    Returns:
+        dict: A dictionary containing:
+            - project_name: The name of the found project directory
+            - folder_path: The full path to the found folder
+            - files: List of all Python file paths in the project
+            - tree_structure: Tree representation of the project structure
+            - success: Boolean indicating if the folder was found
+    """
+    scanner = DirectoryScanner(root_dir=Path('/home/petar/Documents'))
+    found_folder = scanner.find_folder(folder_name)
+    
+    if not found_folder:
+        return {
+            'success': False,
+            'project_name': None,
+            'folder_path': None,
+            'files': [],
+            'tree_structure': f'Folder "{folder_name}" not found in /home/petar/Documents',
+            'message': f'No folder named "{folder_name}" was found.'
+        }
+    
+    folder_path = Path(found_folder)
+    project_name = folder_path.name
+    
+    found_files = scanner.find_files(folder_path)
+    
+    file_paths = [str(file_path) for file_path in found_files if str(file_path).endswith('.py')]
+    
+    tree_structure = scanner.generate_tree_structure(folder_path)
+    
+    return {
+        'success': True,
+        'project_name': project_name,
+        'folder_path': str(folder_path),
+        'files': file_paths,
+        'tree_structure': tree_structure,
+        'message': f'Found project "{project_name}" with {len(file_paths)} Python files.'
+    }
+
+

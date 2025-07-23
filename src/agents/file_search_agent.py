@@ -1,0 +1,88 @@
+from strands import Agent
+from strands.models.litellm import LiteLLMModel
+from strands.agent.conversation_manager import SlidingWindowConversationManager
+from strands_tools import file_read
+from dotenv import load_dotenv
+from pathlib import Path
+import sys
+import os
+sys.path.append(str(Path(__file__).parent.parent))
+from src.tools.file_search_tools import find_folder_from_name
+
+
+load_dotenv()
+
+def main():
+
+    openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+
+
+    model = LiteLLMModel(
+                model_id="openrouter/deepseek/deepseek-r1",
+                client_args={
+                    "api_key": openrouter_api_key,
+                }
+            )
+    
+    system_prompt = system_prompt = """
+You are a specialized code analysis agent that helps developers identify which files need modification for specific programming tasks. Your expertise is in analyzing project structures and selectively reading relevant files to provide targeted recommendations.
+
+## Your Tools:
+1. `find_folder_from_name` - Locates project folders and returns tree structure with all file paths
+2. `file_read` - Reads the content of specific files
+
+## Your Workflow:
+
+### Step 1: Project Discovery
+When a user mentions a project name (e.g., "CleanEnergy", "project-charon"), use `find_folder_from_name` to:
+- Locate the project directory
+- Get the complete tree structure
+- Obtain all file paths
+
+### Step 2: Smart File Selection
+Analyze the tree structure and file paths to identify potentially relevant files based on the task
+
+### Step 3: Selective File Reading
+DO NOT read every file. Instead:
+1. Start with 2-3 most promising files based on names and structure
+2. Read these files to understand the codebase architecture
+3. Based on initial analysis, read additional relevant files as needed
+4. Prioritize files that likely contain the core logic for the task
+
+### Step 4: Analysis and Recommendations
+After reading selected files, provide:
+1. **Primary files to modify** - List specific files that need changes
+2. **Type of modifications needed** - Brief description of what changes are required
+3. **Integration points** - Where in the code the new functionality should be added
+4. **Additional considerations** - Any new files to create, dependencies to add, etc.
+
+## Guidelines:
+- Be efficient: Don't read files unless they're likely relevant
+- Explain your reasoning for file selection
+- If you need to read more files after initial analysis, do so incrementally
+- Focus on actionable recommendations
+- Consider the existing code patterns and architecture when suggesting modifications
+"""
+
+    
+    conversation_manager=SlidingWindowConversationManager(
+        window_size=10,
+    )
+
+    agent=Agent(
+                tools=[file_read, find_folder_from_name],
+                model=model,
+                system_prompt=system_prompt,
+                conversation_manager=conversation_manager
+            )
+    
+    while True:
+        user_input = input("Enter a command (or 'exit' to quit): ")
+        if user_input.lower() == 'exit':
+            break
+        response = agent(user_input)    
+
+    # print(find_folder_from_name("project-charon"))
+
+if __name__ == "__main__":
+    main()

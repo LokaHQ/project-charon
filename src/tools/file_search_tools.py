@@ -1,11 +1,12 @@
-from strands import tool
-from pathlib import Path
 import sys
+from pathlib import Path
+
+from strands import tool
 
 sys.path.append(str(Path(__file__).parent.parent))
-from utils.directory_scanning import DirectoryScanner
-from utils.config_loader import load_config
 from schemas.file_search_returns_schemas import FolderSearchResponse
+from utils.config_loader import load_config
+from utils.directory_scanning import DirectoryScanner
 
 
 @tool

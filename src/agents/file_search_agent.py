@@ -1,19 +1,17 @@
-from strands import Agent
-from strands.models.litellm import LiteLLMModel
-from strands.agent.conversation_manager import SlidingWindowConversationManager
-from strands_tools import file_read
-from dotenv import load_dotenv
-from pathlib import Path
-import sys
 import os
+import sys
+from pathlib import Path
+
+from dotenv import load_dotenv
+from strands import Agent
+from strands.agent.conversation_manager import SlidingWindowConversationManager
+from strands.models.litellm import LiteLLMModel
+from strands_tools import file_read
 
 sys.path.append(str(Path(__file__).parent.parent))
 from src.tools.file_search_tools import find_folder_from_name
-
-from src.utils.prompts import FILE_AGENT_PROMPT
-
 from src.utils.config_loader import load_config
-
+from src.utils.prompts import FILE_AGENT_PROMPT
 
 load_dotenv()
 

@@ -2,6 +2,11 @@ from pathlib import Path
 import os
 import fnmatch
 import subprocess
+import sys
+
+sys.path.append(str(Path(__file__).parent.parent))
+from constants.directories import SKIP_DIRS
+
 
 class DirectoryScanner:
     """
@@ -9,31 +14,21 @@ class DirectoryScanner:
     """
 
     def __init__(self, root_dir: Path):
-
-        self.skip_dirs = {
-            '__pycache__', '.venv', 'venv', 'env',
-            'build', 'dist', 'eggs', '.eggs',
-            'lib', 'lib64', 'parts', 'sdist', 'var',
-            'wheels', 'develop-eggs', 'downloads',
-            'mlruns', 'mlartifacts', 'media', 'data'
-            }
         self.root_dir = root_dir
         self.subfolders = self.fast_scandir(root_dir)
 
-
     def fast_scandir(self, directory: Path) -> list:
         subfolders = []
-        
+
         for root, dirs, files in os.walk(directory):
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in self.skip_dirs]
-        
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d not in SKIP_DIRS]
+
             for dir_name in dirs:
                 subfolders.append(os.path.join(root, dir_name))
-        
-        return subfolders
-    
 
-    def find_folder(self, folder_name: str)-> str:
+        return subfolders
+
+    def find_folder(self, folder_name: str) -> str:
         """
         Searches for a folder with the specified name within the root directory and its subdirectories.
 
@@ -45,14 +40,13 @@ class DirectoryScanner:
             str: The path to the found folder, or an empty string if not found.
         """
 
-        match_score={}
-        k=0
+        match_score = {}
         found_folder = None
         for folder in self.subfolders:
-            splits= folder.split('/')
+            splits = folder.split("/")
             last_folder = splits[-1]
             name_parts = folder_name.split(" ")
-            match_score[folder]=0
+            match_score[folder] = 0
 
             if len(name_parts) == 1:
                 if folder_name.lower() in last_folder.lower():
@@ -79,29 +73,31 @@ class DirectoryScanner:
         else:
             print(f"Folder '{folder_name}' not found in {self.root_dir}")
             return ""
-        
 
-
-
-    def find_files(self,found_folder: Path) -> list:
-
+    def find_files(self, found_folder: Path) -> list:
+        """
+        Finds all Python files in the specified folder and its subdirectories.
+        Args:
+            found_folder (Path): The path to the folder to search for Python files.
+        Returns:
+            list: A list of paths to Python files found in the folder.
+        """
 
         files = []
         for root, _, filenames in os.walk(found_folder):
-            if any(fnmatch.fnmatch(root, f'*/{skip_dir}/*') for skip_dir in self.skip_dirs):
+            if any(fnmatch.fnmatch(root, f"*/{skip_dir}/*") for skip_dir in SKIP_DIRS):
                 continue
-            k=0
+            k = 0
             for filename in filenames:
-                for skip_dir in self.skip_dirs:
+                for skip_dir in SKIP_DIRS:
                     if skip_dir in filename:
-                        k=1
+                        k = 1
                         break
-                if k==0:
-                    if filename.endswith('.py') or filename.endswith('.ipynb'):
+                if k == 0:
+                    if filename.endswith(".py") or filename.endswith(".ipynb"):
                         files.append(str(Path(root) / filename))
 
         return files
-    
 
     def generate_tree_structure(self, folder_path: Path) -> str:
         """
@@ -114,7 +110,7 @@ class DirectoryScanner:
             str: A string representation of the tree structure.
         """
         result = subprocess.run(
-            ['tree', '-l', str(folder_path)],
+            ["tree", "-l", str(folder_path)],
             capture_output=True,
             text=True,
         )

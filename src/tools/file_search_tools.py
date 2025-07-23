@@ -1,22 +1,23 @@
 from strands import tool
 from pathlib import Path
 import sys
-import subprocess
 
 sys.path.append(str(Path(__file__).parent.parent))
 from utils.directory_scanning import DirectoryScanner
+from utils.config_loader import load_config
+from schemas.file_search_returns_schemas import FolderSearchResponse
 
-
-from src.utils.config_loader import load_config
 
 @tool
-def find_folder_from_name(folder_name: str) -> dict:
+def find_folder_from_name(folder_name: str) -> FolderSearchResponse:
     """
     Find a folder by its name in the project root directory, and all python files in it.
-    
+    This function searches for a folder matching the provided name, retrieves all Python files within it,
+    and returns a structured response including the project name, folder path, and a tree structure of the directory.
+
     Args:
         folder_name (str): The name of the project and folder to find.
-        
+
     Returns:
         dict: A dictionary containing:
             - project_name: The name of the found project directory
@@ -26,37 +27,34 @@ def find_folder_from_name(folder_name: str) -> dict:
             - success: Boolean indicating if the folder was found
     """
 
-    config= load_config()
-    print(config.files_agent.root_directory)
+    config = load_config()
+
     scanner = DirectoryScanner(root_dir=Path(config.files_agent.root_directory))
     found_folder = scanner.find_folder(folder_name)
-    
+
     if not found_folder:
-        return {
-            'success': False,
-            'project_name': None,
-            'folder_path': None,
-            'files': [],
-            'tree_structure': f'Folder "{folder_name}" not found in /home/petar/Documents',
-            'message': f'No folder named "{folder_name}" was found.'
-        }
-    
+        return FolderSearchResponse(
+            success=False,
+            project_name=None,
+            folder_path=None,
+            files=[],
+            tree_structure=f'Folder "{folder_name}" not found in {config.files_agent.root_directory}',
+            message=f'No folder named "{folder_name}" was found.',
+        )
+
     folder_path = Path(found_folder)
     project_name = folder_path.name
-    
     found_files = scanner.find_files(folder_path)
-    
-    file_paths = [str(file_path) for file_path in found_files if str(file_path).endswith('.py')]
-    
+    file_paths = [
+        str(file_path) for file_path in found_files if str(file_path).endswith(".py")
+    ]
     tree_structure = scanner.generate_tree_structure(folder_path)
-    
-    return {
-        'success': True,
-        'project_name': project_name,
-        'folder_path': str(folder_path),
-        'files': file_paths,
-        'tree_structure': tree_structure,
-        'message': f'Found project "{project_name}" with {len(file_paths)} Python files.'
-    }
 
-
+    return FolderSearchResponse(
+        success=True,
+        project_name=project_name,
+        folder_path=str(folder_path),
+        files=file_paths,
+        tree_structure=tree_structure,
+        message=f'Found project "{project_name}" with {len(file_paths)} Python files.',
+    )

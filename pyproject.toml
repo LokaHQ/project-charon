@@ -11,3 +11,10 @@ dependencies = [
     "tools>=1.0.2",
     "tree>=0.2.4",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+    "ruff>=0.12.4",
+    "ty>=0.0.1a15",
+]

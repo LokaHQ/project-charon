@@ -51,7 +51,7 @@ def find_folder_from_name(folder_name: str) -> FolderSearchResponse:
     ]
     tree_structure = scanner.generate_tree_structure(folder_path)
 
-    return FolderSearchResponse(
+    folderSearch = FolderSearchResponse(
         success=True,
         project_name=project_name,
         folder_path=str(folder_path),
@@ -59,3 +59,7 @@ def find_folder_from_name(folder_name: str) -> FolderSearchResponse:
         tree_structure=tree_structure,
         message=f'Found project "{project_name}" with {len(file_paths)} Python files.',
     )
+
+    print(folderSearch)
+
+    return folderSearch

@@ -1,5 +1,5 @@
 #model_sonnet="anthropic.claude-sonnet-4-20250514-v1:0"
-#model_deepseek="openrouter/deepseek/deepseek-r1"
+#model_deepseek="openrouter/deepseek/deepseek-r1-0528"
 files_agent:
   root_directory: "/home/petar/Documents"
   model:

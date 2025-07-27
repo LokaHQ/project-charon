@@ -10,6 +10,7 @@ from strands.models.litellm import LiteLLMModel
 from strands_tools import file_read
 
 sys.path.append(str(Path(__file__).parent.parent))
+from src.schemas.file_agent_output_schema import FileAgentOutputSchema
 from src.tools.file_search_tools import find_folder_from_name
 from src.utils.config_loader import load_config
 from src.utils.prompts import FILE_AGENT_PROMPT
@@ -62,10 +63,15 @@ def main():
     #     if user_input.lower() == "exit":
     #         break
     #     agent(user_input)
-
-    agent(
-        "For the project called Charon, how long would it take me to implement a file writting tool?"
-    )
+    if config.files_agent.model.model_id.startswith("openrouter"):
+        agent(
+            "For the project called Charon, how long would it take me to implement a file writting tool?"
+        )
+    elif config.files_agent.model.model_id.startswith("anthropic"):
+        agent.structured_output(
+            FileAgentOutputSchema,
+            "For the project called Charon, how long would it take me to implement a file writting tool?",
+        )
     # print(find_folder_from_name("project-charon"))
 
 

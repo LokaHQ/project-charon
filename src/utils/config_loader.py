@@ -4,7 +4,12 @@ from pathlib import Path
 import yaml
 
 sys.path.append(str(Path(__file__).parent.parent))
-from schemas.config_schema import Config, FilesAgentConfig, ModelConfig
+from schemas.config_schema import (
+    Config,
+    FilesAgentConfig,
+    ModelConfig,
+    CalendarAgentConfig,
+)
 
 
 def load_config(config_path: str = "") -> Config:
@@ -30,12 +35,18 @@ def load_config(config_path: str = "") -> Config:
     with open(config_path) as file:
         raw_config = yaml.safe_load(file)
 
-    model_config = ModelConfig(
+    files_model_config = ModelConfig(
         model_id=raw_config["files_agent"]["model"]["model_id"],
     )
-
     files_agent_config = FilesAgentConfig(
-        model=model_config, root_directory=raw_config["files_agent"]["root_directory"]
+        model=files_model_config,
+        root_directory=raw_config["files_agent"]["root_directory"],
     )
 
-    return Config(files_agent=files_agent_config)
+    calendar_model_config = ModelConfig(
+        model_id=raw_config["calendar_agent"]["model"]["model_id"],
+    )
+
+    calendar_agent_config = CalendarAgentConfig(model=calendar_model_config)
+
+    return Config(files_agent=files_agent_config, calendar_agent=calendar_agent_config)

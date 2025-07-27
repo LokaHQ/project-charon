@@ -1,49 +1,33 @@
-import json
-import os
+import sys
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pytz
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
 from strands import tool
 
-# Scopes for google calendar API
-SCOPES = [
-    "https://www.googleapis.com/auth/calendar.events",
-    "https://www.googleapis.com/auth/calendar",
-]
-
-
-# Google calendar Authentication
-def authenticate_calendar():
-    creds = None
-    if os.path.exists("google_credentials.json"):
-        creds = Credentials.from_authorized_user_file("google_credentials.json", SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open("google_credentials.json", "w") as token:
-            token.write(creds.to_json())
-    return build("calendar", "v3", credentials=creds)
+sys.path.append(str(Path(__file__).parent.parent))
+from src.schemas.calendar_agent_returns_schema import (
+    CalendarCreationReturn,
+    CalendarEventInput,
+    CalendarEventResponse,
+    CalendarEventsListResponse,
+)
+from src.utils.google_calendar_auth import authenticate_calendar
 
 
 # Function calling to get calendar events within a specified duration
-@tool
-def get_events(duration: str = "") -> str:
+@tool(
+    name="get_events",
+    description="Retrieve events from Google Calendar within a specified time period",
+)
+def get_events(duration: str = "") -> CalendarEventsListResponse:
     """
     Retrieves events from Google Calendar within a specified time period.
     If no duration is specified, it retrieves events for the current week.
     Args:
-        duration (str): The duration in days for which to retrieve events. Must be in numeric
+        duration (str): The duration in days for which to retrieve events. Must be in numeric. For example, if it is 2, it will return events for the next 2 days.
     Returns:
-        str: A JSON string containing the list of events with their start and end times, and summaries."""
-    import json
-
+        CalendarEventsListResponse: A structured response containing a list of events, total count, and any error messages."""
     service = authenticate_calendar()
 
     now = datetime.now()
@@ -70,37 +54,42 @@ def get_events(duration: str = "") -> str:
     )
     events = events_result.get("items", [])
 
+    # Convert to Pydantic models
     events_list = []
     for event in events:
-        event_data = {
-            "start": event["start"].get("dateTime", event["start"].get("date")),
-            "end": event["end"].get("dateTime", event["end"].get("date")),
-            "summary": event.get("summary", "No Title"),
-        }
-        events_list.append(event_data)
+        event_response = CalendarEventResponse(
+            start=event["start"].get("dateTime", event["start"].get("date")),
+            end=event["end"].get("dateTime", event["end"].get("date")),
+            summary=event.get("summary", "No Title"),
+        )
+        events_list.append(event_response)
 
-    return json.dumps(events_list)
+    return CalendarEventsListResponse(events=events_list, total_count=len(events_list))
 
 
 # Function calling to create an event in calandar
-@tool
+@tool(
+    name="create_event",
+    description="Create a new event in Google Calendar",
+    inputSchema=CalendarEventInput.model_json_schema(),
+)
 def create_event(
     title: str,
     start_time: str,
     end_time: str,
     description: str = "",
     location: str = "",
-) -> str:
+) -> CalendarCreationReturn:
     """
     Schedules a new event in Google Calendar.
     Args:
-        title (str): The title of the event.
-        start_time (str): The start time of the event in 'YYYY-MM-DDTHH:MM:SS' format.
-        end_time (str): The end time of the event in 'YYYY-MM-DDTHH:MM:SS' format.
-        description (str, optional): The description of the event.
-        location (str, optional): The location of the event.
+        title (str): Title of the event
+        start_time (str): Start time of the event in 'YYYY-MM-DDTHH:MM:SS' format
+        end_time (str): End time of the event in 'YYYY-MM-DDTHH:MM:SS' format
+        description (str, optional): Description of the event
+        location (str, optional): Location of the event
     Returns:
-        str: A JSON string containing the link to the created event or an error message.
+        CalendarCreationReturn: A structured response containing the status, message, event link, and event ID.
     """
     try:
         service = authenticate_calendar()
@@ -108,21 +97,29 @@ def create_event(
         timezone = "Europe/Berlin"  # GMT+1 timezone
         tz = pytz.timezone(timezone)
 
+        event_data = CalendarEventInput(
+            title=title,
+            start_time=start_time,
+            end_time=end_time,
+            description=description,
+            location=location,
+        )
+
         # Parse and localize times
-        start_time = tz.localize(datetime.fromisoformat(start_time))
-        end_time = tz.localize(datetime.fromisoformat(end_time))
+        start_time_dt = tz.localize(datetime.fromisoformat(event_data.start_time))
+        end_time_dt = tz.localize(datetime.fromisoformat(event_data.end_time))
 
         event = {
-            "summary": title,
-            "location": location,
-            "description": description,
+            "summary": event_data.title,
+            "location": event_data.location,
+            "description": event_data.description,
             "start": {
-                "dateTime": start_time.isoformat(),
-                "timeZone": timezone,  # Fixed: use actual timezone
+                "dateTime": start_time_dt.isoformat(),
+                "timeZone": timezone,
             },
             "end": {
-                "dateTime": end_time.isoformat(),
-                "timeZone": timezone,  # Fixed: use actual timezone
+                "dateTime": end_time_dt.isoformat(),
+                "timeZone": timezone,
             },
         }
 
@@ -131,18 +128,17 @@ def create_event(
         )
 
         # Return a properly formatted response
-        result = {
-            "status": "success",
-            "message": "Event created successfully",
-            "event_link": created_event.get("htmlLink"),
-            "event_id": created_event.get("id"),
-        }
-        return json.dumps(result)
+        return CalendarCreationReturn(
+            status="success",
+            message="Event created successfully",
+            event_link=created_event.get("htmlLink", ""),
+            event_id=created_event.get("id", ""),
+        )
 
     except Exception as e:
-        # Return proper error JSON
-        error_result = {
-            "status": "error",
-            "message": f"Failed to create event: {str(e)}",
-        }
-        return json.dumps(error_result)
+        return CalendarCreationReturn(
+            status="error",
+            message=f"Failed to create event: {str(e)}",
+            event_link="",
+            event_id="",
+        )

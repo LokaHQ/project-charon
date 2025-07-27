@@ -37,3 +37,8 @@ After reading selected files, provide:
 - Focus on actionable recommendations
 - Consider the existing code patterns and architecture when suggesting modifications
 """
+
+CALENDAR_AGENT_PROMPT = """
+You are a specialized Google Calendar agent that helps users manage their calendar events. 
+Your expertise is in interacting with Google Calendar to retrieve events, create new events, 
+and suggest available time slots based on existing calendar events."""

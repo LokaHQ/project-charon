@@ -7,17 +7,23 @@ from strands import Agent
 from strands.models.litellm import LiteLLMModel
 
 sys.path.append(str(Path(__file__).parent.parent))
+from src.schemas.calendar_agent_returns_schema import CalendarEventInput
 from src.tools.celander_tools import create_event, get_events
 from src.utils.config_loader import load_config
+from src.utils.prompts import CALENDAR_AGENT_PROMPT
 
 
 # Add this to your main function for testing
 def test_create_event():
-    result = create_event(
-        title="Test Event",
-        start_time="2025-07-28T11:00:00",
-        end_time="2025-07-28T13:00:00",
+    test_event = CalendarEventInput(
+        title="Test Meeting",
+        start_time="2025-07-29T10:00:00",
+        end_time="2025-07-29T11:00:00",
+        description="Test description",
+        location="Test location",
     )
+
+    result = create_event(test_event)
     print(f"Direct function call result: {result}")
 
 
@@ -25,6 +31,11 @@ load_dotenv()
 
 
 def main():
+    """
+    Main function to run the Google Calendar agent.
+    It initializes the agent with the necessary tools and configurations,
+    """
+
     config = load_config()
 
     api_key = os.getenv("OPENROUTER_API_KEY")
@@ -36,19 +47,14 @@ def main():
         },
     )
 
-    system_prompt = """
-    You are a helpful assistant that can interact with Google Calendar. 
-    You need to recommend available time slots for a user based on their calendar events. 
-    You can also create new events in the calendar. 
-    If the user asks for available time slots, you can call the get_events function with a duration parameter to get the next available time slots. 
-    If the user wants to create an event, you can call the create_event function with the required parameters."""
+    system_prompt = CALENDAR_AGENT_PROMPT
 
     agent = Agent(
         tools=[get_events, create_event], model=model, system_prompt=system_prompt
     )
 
     agent(
-        "Create an event in my calendar from july 28th 2025 at 2pm until 4pm with the title 'Test Event' and description 'This is a test event'. Location is 'Virtual Meeting'."
+        "I need to have a meeting with John tomorrow for 1 hour. Create an event for 28th July 2025 from 17:00 to 18:00."
     )
     # print(test_create_event())
 

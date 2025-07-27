@@ -1,13 +1,13 @@
-from dotenv import load_dotenv
-from pathlib import Path
-import sys
-from strands.models.litellm import LiteLLMModel
-from strands import Agent
 import os
+import sys
+from pathlib import Path
 
+from dotenv import load_dotenv
+from strands import Agent
+from strands.models.litellm import LiteLLMModel
 
 sys.path.append(str(Path(__file__).parent.parent))
-from src.tools.celander_tools import get_events, create_event
+from src.tools.celander_tools import create_event, get_events
 from src.utils.config_loader import load_config
 
 

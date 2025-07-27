@@ -1,11 +1,12 @@
-import os
 import json
+import os
 from datetime import datetime, timedelta
+
+import pytz
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-import pytz
 from strands import tool
 
 # Scopes for google calendar API

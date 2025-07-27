@@ -5,10 +5,10 @@ import yaml
 
 sys.path.append(str(Path(__file__).parent.parent))
 from schemas.config_schema import (
+    CalendarAgentConfig,
     Config,
     FilesAgentConfig,
     ModelConfig,
-    CalendarAgentConfig,
 )
 
 

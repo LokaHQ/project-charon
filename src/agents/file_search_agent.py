@@ -5,10 +5,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 from strands import Agent
 from strands.agent.conversation_manager import SlidingWindowConversationManager
+from strands.models import BedrockModel
 from strands.models.litellm import LiteLLMModel
 from strands_tools import file_read
 
 sys.path.append(str(Path(__file__).parent.parent))
+from src.schemas.file_agent_output_schema import FileAgentOutputSchema
 from src.tools.file_search_tools import find_folder_from_name
 from src.utils.config_loader import load_config
 from src.utils.prompts import FILE_AGENT_PROMPT
@@ -27,14 +29,21 @@ def main():
 
     config = load_config()
 
-    print(config)
+    if config.files_agent.model.model_id.startswith("openrouter"):
+        model = LiteLLMModel(
+            model_id=config.files_agent.model.model_id,
+            client_args={
+                "api_key": openrouter_api_key,
+            },
+            max_tokens=10000,
+            streaming=True,
+        )
 
-    model = LiteLLMModel(
-        model_id=config.files_agent.model.model_id,
-        client_args={
-            "api_key": openrouter_api_key,
-        },
-    )
+    elif config.files_agent.model.model_id.startswith("anthropic"):
+        model = BedrockModel(
+            model_id=config.files_agent.model.model_id,
+            client_args={"region_name": "us-east-1"},
+        )
 
     system_prompt = FILE_AGENT_PROMPT
 
@@ -49,12 +58,20 @@ def main():
         conversation_manager=conversation_manager,
     )
 
-    while True:
-        user_input = input("Enter a command (or 'exit' to quit): ")
-        if user_input.lower() == "exit":
-            break
-        agent(user_input)
-
+    # while True:
+    #     user_input = input("Enter a command (or 'exit' to quit): ")
+    #     if user_input.lower() == "exit":
+    #         break
+    #     agent(user_input)
+    if config.files_agent.model.model_id.startswith("openrouter"):
+        agent(
+            "For the project called Charon, how long would it take me to implement a file writting tool?"
+        )
+    elif config.files_agent.model.model_id.startswith("anthropic"):
+        agent.structured_output(
+            FileAgentOutputSchema,
+            "For the project called Charon, how long would it take me to implement a file writting tool?",
+        )
     # print(find_folder_from_name("project-charon"))
 
 

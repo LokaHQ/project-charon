@@ -27,7 +27,7 @@ def get_events(duration: str = "") -> CalendarEventsListResponse:
     Retrieves events from Google Calendar within a specified time period.
     If no duration is specified, it retrieves events for the current week.
     Args:
-        duration (str): The duration in days for which to retrieve events. Must be in numeric. For example, if it is 2, it will return events for the next 2 days.
+        duration (str): The duration in days for which to retrieve events. Must be in numeric. For example, if it is 2, it adds all the events from today + the next 2 days. If it's 0, it retrieves all events left for today.
     Returns:
         CalendarEventsListResponse: A structured response containing a list of events, total count, and any error messages."""
     try:
@@ -46,11 +46,24 @@ def get_events(duration: str = "") -> CalendarEventsListResponse:
             )
         else:
             time_min = now.isoformat() + "Z"
-            time_max = (now + timedelta(days=int(duration))).isoformat() + "Z"
 
-            logger.info(
-                f"Retrieving events for the next {duration} days starting from {now.date()}."
-            )
+            if int(duration) == 0:
+                end_of_today = now.replace(
+                    hour=23, minute=59, second=59, microsecond=999999
+                )
+                time_max = end_of_today.isoformat() + "Z"
+                logger.info(
+                    f"Retrieving remaining events for today starting from {now.strftime('%H:%M')}"
+                )
+            else:
+                end_date = now + timedelta(days=int(duration))
+                end_of_period = end_date.replace(
+                    hour=23, minute=59, second=59, microsecond=999999
+                )
+                time_max = end_of_period.isoformat() + "Z"
+                logger.info(
+                    f"Retrieving events from now until {end_date}: {int(duration)} additional days"
+                )
 
         events_result = (
             service.events()

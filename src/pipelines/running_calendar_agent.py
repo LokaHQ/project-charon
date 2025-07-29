@@ -21,7 +21,7 @@ def main():
         if user_input.lower() == "exit":
             break
 
-        response = calendar_agent.run(user_input)
+        response = calendar_agent.query(user_input)
         print(
             f"Agent: {response.message if hasattr(response, 'message') else response}"
         )

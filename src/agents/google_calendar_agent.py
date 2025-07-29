@@ -38,7 +38,7 @@ class CalendarAgent:
             system_prompt=CALENDAR_AGENT_PROMPT,
         )
 
-    def run(self, user_input: str):
+    def query(self, user_input: str):
         """
         Run the agent with the provided user input.
         This method can be called to process commands related to calendar events.

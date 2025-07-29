@@ -27,6 +27,15 @@ class CalendarAgentConfig(BaseModel):
     )
 
 
+class TaskAgentConfig(BaseModel):
+    """Configuration for the task agent"""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for task agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
 class Config(BaseModel):
     """Main configuration schema."""
 
@@ -34,3 +43,4 @@ class Config(BaseModel):
     calendar_agent: CalendarAgentConfig = Field(
         ..., description="Calendar agent configuration"
     )
+    task_agent: TaskAgentConfig = Field(..., description="Task agent configuration")

@@ -1,0 +1,40 @@
+{
+  "to_read": [
+    {
+      "title": "The Midnight Library",
+      "author": "Matt Haig",
+      "genre": "Fiction",
+      "pages": 288,
+      "notes": "Recommended by Sarah after I loved 'Klara and the Sun'",
+      "added_date": "2024-01-15"
+    },
+    {
+      "title": "Atomic Habits",
+      "author": "James Clear",
+      "genre": "Self-Help",
+      "pages": 320,
+      "notes": "Want to build better routines for 2024",
+      "added_date": "2024-01-02"
+    },
+    {
+      "title": "Sapiens",
+      "author": "Yuval Noah Harari",
+      "genre": "Non-Fiction",
+      "pages": 443,
+      "notes": "Been meaning to read this for years",
+      "added_date": "2023-12-28"
+    }
+  ],
+  "read": [
+    {
+      "title": "The Martian",
+      "author": "Andy Weir",
+      "genre": "Science Fiction",
+      "pages": 369,
+      "rating": 8,
+      "notes": "Page-turner! Science was accessible and humor kept it light.",
+      "added_date": "2023-10-20",
+      "read_date": "2023-12-15"
+    }
+  ]
+}

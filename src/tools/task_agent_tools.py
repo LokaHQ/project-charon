@@ -40,20 +40,6 @@ def file_search_agent_query(question: str) -> str:
         return error_msg
 
 
-# @tool(
-#     name="file_search_agent_interactive_session",
-#     description="Start an interactive session with the file search agent for multiple queries. Use this when you need to have a conversation about project structure or multiple file-related questions."
-# )
-# def file_search_agent_interactive_session():
-#     """
-#     Start an interactive session with the file search agent.
-#     Note: This will start a command-line interactive session.
-
-#     Returns:
-#         str: Status message about starting the interactive session
-#     """
-
-
 @tool(
     name="google_calendar_agent_query",
     description="Query the Google Calendar agent to manage calendar events. Can retrieve events, create new events, and provide scheduling assistance.",
@@ -82,17 +68,3 @@ def google_calendar_agent_query(query: str) -> str:
         error_msg = f"Error querying calendar agent: {str(e)}"
         logger.error(error_msg)
         return error_msg
-
-
-# @tool(
-#     name="google_calendar_agent_interactive_session",
-#     description="Start an interactive session with the Google Calendar agent for multiple calendar operations."
-# )
-# def google_calendar_agent_interactive_session() -> str:
-#     """
-#     Start an interactive session with the Google Calendar agent.
-#     This allows for multiple calendar queries in a conversational format.
-
-#     Returns:
-#         str: Status message about the interactive session
-#     """

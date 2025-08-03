@@ -27,6 +27,15 @@ class CalendarAgentConfig(BaseModel):
     )
 
 
+class HomeAgentConfig(BaseModel):
+    """Configuration for the home agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for home agent (e.g., 'openrouter/openrouter/horizon-beta')",
+    )
+
+
 class Config(BaseModel):
     """Main configuration schema."""
 
@@ -34,3 +43,4 @@ class Config(BaseModel):
     calendar_agent: CalendarAgentConfig = Field(
         ..., description="Calendar agent configuration"
     )
+    home_agent: HomeAgentConfig = Field(..., description="Home agent configuration")

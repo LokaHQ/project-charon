@@ -1,51 +1,31 @@
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
-from strands import Agent
-from strands.models.litellm import LiteLLMModel
-
 sys.path.append(str(Path(__file__).parent.parent))
-import os
-
-
-from src.tools.home_agent_tools import (
-    add_book_to_reading_list,
-    add_movie_or_show_to_watchlist,
-    get_book_lists,
-    get_movies_and_show_list,
-    mark_book_read,
-    mark_movie_or_show_watched,
-    search_omdb_movie_or_show,
-)
-from utils.prompts import HOME_AGENT_PROMPT
-
-load_dotenv()
+from agents.home_agent import HomeAgent
 
 
 def main():
-    openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+    """
+    Main function to run the Home Agent.
+    It initializes the agent with the necessary tools and configurations,
+    and starts an interactive loop for user commands.
+    """
+    home_agent = HomeAgent()
 
-    model = LiteLLMModel(
-        model_id="openrouter/mistralai/devstral-small",
-        client_args={"api_key": openrouter_api_key},
-    )
+    print("Welcome to the Home Agent!")
+    print("You can ask me to manage your movies, shows, and books.")
+    print("Type 'exit' to quit.")
 
-    agent = Agent(
-        model=model,
-        tools=[
-            get_movies_and_show_list,
-            mark_movie_or_show_watched,
-            add_movie_or_show_to_watchlist,
-            get_book_lists,
-            mark_book_read,
-            add_book_to_reading_list,
-            search_omdb_movie_or_show,
-        ],
-        system_prompt=HOME_AGENT_PROMPT,
-    )
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == "exit":
+            break
 
-    agent("Add the show Young Justice to my watchlist please.")
+        response = home_agent.agent(user_input)
+        print(
+            f"Agent: {response.message if hasattr(response, 'message') else response}"
+        )
 
 
 if __name__ == "__main__":

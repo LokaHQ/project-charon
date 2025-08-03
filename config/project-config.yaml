@@ -3,7 +3,10 @@
 files_agent:
   root_directory: "/home/petar/Documents"
   model:
-    model_id: "openrouter/deepseek/deepseek-r1"
+    model_id: "openrouter/openrouter/horizon-beta"
 calendar_agent:
   model:
-    model_id: "openrouter/deepseek/deepseek-r1"
+    model_id: "openrouter/openrouter/horizon-beta"
+home_agent:
+  model:
+    model_id: "openrouter/openrouter/horizon-beta"

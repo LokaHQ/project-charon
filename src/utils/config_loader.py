@@ -9,6 +9,7 @@ from schemas.config_schema import (
     Config,
     FilesAgentConfig,
     ModelConfig,
+    HomeAgentConfig,
 )
 
 
@@ -49,4 +50,14 @@ def load_config(config_path: str = "") -> Config:
 
     calendar_agent_config = CalendarAgentConfig(model=calendar_model_config)
 
-    return Config(files_agent=files_agent_config, calendar_agent=calendar_agent_config)
+    home_model_config = ModelConfig(
+        model_id=raw_config["home_agent"]["model"]["model_id"],
+    )
+
+    home_agent_config = HomeAgentConfig(model=home_model_config)
+
+    return Config(
+        files_agent=files_agent_config,
+        calendar_agent=calendar_agent_config,
+        home_agent=home_agent_config,
+    )

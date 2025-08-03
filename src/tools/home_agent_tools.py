@@ -312,6 +312,8 @@ def search_omdb_movie_or_show(title: str, year: str = "", type="") -> str:
     url = "http://www.omdbapi.com/"
     params = {"apikey": api_key, "s": title, "plot": "short"}
 
+    logger.info(f"Searching OMDB for movie/show: {title} (Year: {year}, Type: {type})")
+
     if year != "":
         params["y"] = year
 
@@ -334,3 +336,40 @@ def search_omdb_movie_or_show(title: str, year: str = "", type="") -> str:
     except Exception as e:
         logger.error(f"Error searching for movie: {str(e)}")
         return f"Error searching for movie: {str(e)}"
+
+
+@tool
+def search_book(title: str, author: str = "") -> str:
+    """
+    Search for book information using the Open Library API.
+
+    Args:
+        title: Book title to search by
+        author: Book author to search by (optional)
+
+    Returns:
+        str: A string of JSONs that the API matched to the search
+    """
+    api_url = "https://openlibrary.org/search.json"
+    params = {"title": title}
+    logger.info(f"Searching Open Library for book: {title} (Author: {author})")
+    if author:
+        params["author"] = author
+
+    try:
+        response = requests.get(api_url, params=params)
+        data = response.json()
+
+        if data.get("numFound", 0) > 0:
+            logger.success(f"Open Library returned the following books {data}")
+
+            return f"Found matches: {json.dumps(data)}"
+        else:
+            logger.error("Book not found")
+            return (
+                f"Book '{title}' not found. Error: {data.get('Error', 'Unknown error')}"
+            )
+
+    except Exception as e:
+        logger.error(f"Error searching for book: {str(e)}")
+        return f"Error searching for book: {str(e)}"

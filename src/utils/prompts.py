@@ -65,6 +65,7 @@ Available tools:
 - add_book_to_reading_list(title, author, genre, pages, notes)
 - mark_book_read(title, author, rating, notes)
 - search_omdb_movie_or_show (title,year,type)
+- search_book(title, author)
 
 Guidelines for recommendations:
 - Suggest 2-3 options unless asked for more
@@ -89,4 +90,10 @@ WORKFLOW FOR ADDING MOVIES:
 2. If user provides minimal info (just title), use IMDB tools to find complete metadata
 3. If user provides some metadata, still search IMDB to fill in missing details
 4. Always create complete, rich movie entries with full IMDB data
+
+WORKFLOW FOR ADDING BOOKS:
+1. When user says "Add [Book Title] to reading list", ALWAYS enrich with book search tool automatically
+2. If user provides minimal info (just title), use book search tools to find complete metadata
+3. If user provides some metadata, still search book tools to fill in missing details
+4. Always create complete, rich book entries with full metadata
 """

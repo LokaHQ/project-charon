@@ -1,14 +1,6 @@
 {
   "to_watch": [
     {
-      "title": "Dune: Part Two",
-      "year": 2024,
-      "genre": "Sci-Fi",
-      "director": "Denis Villeneuve",
-      "notes": "Need to rewatch Part One first",
-      "added_date": "2024-03-15"
-    },
-    {
       "title": "The Bear",
       "year": 2022,
       "genre": "Comedy-Drama",
@@ -87,6 +79,14 @@
       "director": "Greg Weisman, Brandon Vietti",
       "notes": "DC Comics superhero team animated series",
       "added_date": "2025-07-30"
+    },
+    {
+      "title": "Inception",
+      "year": 2010,
+      "genre": "Action, Adventure, Sci-Fi",
+      "director": "Christopher Nolan",
+      "notes": "Added via OMDB enrichment. Mind-bending heist thriller starring Leonardo DiCaprio.",
+      "added_date": "2025-08-03"
     }
   ],
   "watched": [
@@ -189,6 +189,16 @@
       "added_date": "2020-10-25",
       "watched_date": "2023-07-01",
       "rating": 9
+    },
+    {
+      "title": "Dune: Part Two",
+      "year": 2024,
+      "genre": "Sci-Fi",
+      "director": "Denis Villeneuve",
+      "notes": "Amazing movie with stunning visuals and a great soundtrack.",
+      "added_date": "2024-03-15",
+      "watched_date": "2025-08-03",
+      "rating": 10
     }
   ]
 }

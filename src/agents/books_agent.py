@@ -1,37 +1,26 @@
-import sys
 from pathlib import Path
+import sys
 
-from dotenv import load_dotenv
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from src.tools.home_agent_tools import (
+    add_book_to_reading_list,
+    get_book_lists,
+    mark_book_read,
+    search_book,
+)
+from src.utils.config_loader import load_config
+from utils.prompts import BOOKS_AGENT_PROMPT
 from strands import Agent
 from strands.models.litellm import LiteLLMModel
-
-sys.path.append(str(Path(__file__).parent.parent))
+from strands.models import BedrockModel
+from strands.agent.conversation_manager import SlidingWindowConversationManager
 import os
 
 
-from src.tools.home_agent_tools import (
-    add_book_to_reading_list,
-    add_movie_or_show_to_watchlist,
-    get_book_lists,
-    get_movies_and_show_list,
-    mark_book_read,
-    mark_movie_or_show_watched,
-    search_omdb_movie_or_show,
-    search_book,
-)
-from utils.prompts import HOME_AGENT_PROMPT
-from src.utils.config_loader import load_config
-from strands.models import BedrockModel
-from strands.agent.conversation_manager import SlidingWindowConversationManager
-from src.schemas.file_agent_output_schema import FileAgentOutputSchema
-
-load_dotenv()
-
-
-class HomeAgent:
+class BookAgent:
     """
-    A home agent that can manage tasks related to movies, shows, and books.
-    It can add items to watchlists, mark items as watched or read, and search for movies or shows.
+    A book agent that can manage tasks related to books.
+    It can add books to a reading list, mark books as read, and search for books.
     """
 
     def __init__(self):
@@ -59,19 +48,15 @@ class HomeAgent:
             raise ValueError(f"Unsupported model type: {self.model_id}")
 
     def _initialize_agent(self):
-        """Initialize the agent with tools, model, and conversation manager."""
-        system_prompt = HOME_AGENT_PROMPT
+        """Initialize the agent with the necessary tools and prompts."""
+        system_prompt = BOOKS_AGENT_PROMPT
         conversation_manager = SlidingWindowConversationManager(window_size=10)
 
         return Agent(
             tools=[
-                get_movies_and_show_list,
-                mark_movie_or_show_watched,
-                add_movie_or_show_to_watchlist,
+                add_book_to_reading_list,
                 get_book_lists,
                 mark_book_read,
-                add_book_to_reading_list,
-                search_omdb_movie_or_show,
                 search_book,
             ],
             model=self.model,
@@ -79,18 +64,10 @@ class HomeAgent:
             conversation_manager=conversation_manager,
         )
 
-    def query(self, question: str) -> str:
+    def query(self, user_input: str):
         """
-        Run a single query against the agent.
-
-        Args:
-            question: The question to ask the agent
-
-        Returns:
-            The agent's response
+        Run the agent with the provided user input.
+        This method can be called to process commands related to book management.
         """
-
-        if self.model_id.startswith("anthropic"):
-            return self.agent.structured_output(FileAgentOutputSchema, question)
-        else:
-            return self.agent(question)
+        response = self.agent(user_input)
+        return response

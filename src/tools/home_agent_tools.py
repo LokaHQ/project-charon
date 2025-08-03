@@ -100,7 +100,7 @@ def add_movie_or_show_to_watchlist(
 
 @tool
 def mark_movie_or_show_watched(
-    title: str, rating: Optional[int] = None, notes: Optional[str] = None
+    title: str, rating: Optional[float] = None, notes: Optional[str] = None
 ) -> str:
     """
     Mark a movie as watched and move it to the watched list.
@@ -239,7 +239,7 @@ def add_book_to_reading_list(
 
 @tool
 def mark_book_read(
-    title: str, author: str, rating: Optional[int] = None, notes: Optional[str] = None
+    title: str, author: str, rating: Optional[float] = None, notes: Optional[str] = None
 ) -> str:
     """
     Mark a book as read and move it to the read list.

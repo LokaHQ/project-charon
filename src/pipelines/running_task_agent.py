@@ -9,7 +9,7 @@ def main():
     agent = TaskAgent()
 
     agent.query(
-        "I need to implement a file writting tool in my project called Charon. How long would it take, and look at my calendar to see where you can implement it"
+        "I need to implement a file writting tool in my project called Charon. The project is on github. How long would it take, and look at my calendar to see when you can implement it"
     )
 
 

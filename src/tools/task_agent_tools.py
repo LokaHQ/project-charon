@@ -7,6 +7,7 @@ from strands import tool
 
 from agents.file_search_agent import FileSearchAgent
 from agents.google_calendar_agent import CalendarAgent
+from agents.github_agent import GitHubAgent
 
 
 @tool(
@@ -66,5 +67,35 @@ def google_calendar_agent_query(query: str) -> str:
         return str(response)
     except Exception as e:
         error_msg = f"Error querying calendar agent: {str(e)}"
+        logger.error(error_msg)
+        return error_msg
+
+
+@tool(
+    name="github_agent_query",
+    description="Query the GitHub agent to manage GitHub repositories and issues. Can retrieve repository information, create issues, and manage pull requests.",
+)
+def github_agent_query(query: str) -> str:
+    """
+    Query the GitHub agent with a GitHub-related request.
+
+    Args:
+        query (str): The GitHub-related query. Examples:
+                    - "What issues are open in my repository?"
+                    - "Create a new issue for bug #123"
+                    - "Show me the pull requests in my repository"
+                    - "How do I clone my repository?"
+
+    Returns:
+        str: The agent's response regarding GitHub operations
+    """
+    try:
+        logger.info(f"Querying GitHub agent with: {query}")
+        agent = GitHubAgent()
+        response = agent.query(query)
+        logger.success("GitHub agent query completed successfully")
+        return str(response)
+    except Exception as e:
+        error_msg = f"Error querying GitHub agent: {str(e)}"
         logger.error(error_msg)
         return error_msg

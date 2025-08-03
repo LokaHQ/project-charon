@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from src.tools.task_agent_tools import (
     file_search_agent_query,
     google_calendar_agent_query,
+    github_agent_query,
 )
 from src.utils.config_loader import load_config
 from utils.prompts import TASK_AGENT_PROMPT
@@ -37,7 +38,11 @@ class TaskAgent:
         )
         self.conversation_manager = SlidingWindowConversationManager(window_size=10)
         self.agent = Agent(
-            tools=[google_calendar_agent_query, file_search_agent_query],
+            tools=[
+                google_calendar_agent_query,
+                file_search_agent_query,
+                github_agent_query,
+            ],
             model=self.model,
             system_prompt=TASK_AGENT_PROMPT,
             conversation_manager=self.conversation_manager,

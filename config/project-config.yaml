@@ -3,10 +3,14 @@
 files_agent:
   root_directory: "/home/petar/Documents"
   model:
-    model_id: "openrouter/mistralai/devstral-small"
+    model_id: "openrouter/openrouter/horizon-beta"
 calendar_agent:
   model:
-    model_id: "openrouter/mistralai/devstral-small"
+    model_id: "openrouter/openrouter/horizon-beta"
 task_agent:
   model:
-    model_id: "openrouter/mistralai/devstral-medium"
+    model_id: "openrouter/openrouter/horizon-beta"
+github_agent:
+  model:
+    model_id: "openrouter/openrouter/horizon-beta"
+  github_username: "PetarKalinovski"

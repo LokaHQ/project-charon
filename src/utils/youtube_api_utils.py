@@ -1,5 +1,4 @@
 from googleapiclient.discovery import build
-import isodate
 import os
 
 
@@ -59,9 +58,3 @@ class YouTubeMonitor:
             return channel_url_or_handle.split("/channel/")[-1]
 
         return response["items"][0]["id"] if response["items"] else None
-
-
-def parse_duration_to_minutes(duration_str):
-    """Convert YouTube duration (PT4M13S) to minutes"""
-    duration = isodate.parse_duration(duration_str)
-    return duration.total_seconds() / 60

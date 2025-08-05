@@ -778,6 +778,15 @@ wheels = [
 ]
 
 [[package]]
+name = "isodate"
+version = "0.7.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/4d/e940025e2ce31a8ce1202635910747e5a87cc3a6a6bb2d00973375014749/isodate-0.7.2.tar.gz", hash = "sha256:4cd1aa0f43ca76f4a6c6c0292a85f40b35ec2e43e315b59f06e6d32171a953e6", size = 29705 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/15/aa/0aca39a37d3c7eb941ba736ede56d689e7be91cab5d9ca846bde3999eba6/isodate-0.7.2-py3-none-any.whl", hash = "sha256:28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15", size = 22320 },
+]
+
+[[package]]
 name = "jedi"
 version = "0.19.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1515,6 +1524,7 @@ dependencies = [
     { name = "google-auth" },
     { name = "google-auth-oauthlib" },
     { name = "ipykernel" },
+    { name = "isodate" },
     { name = "litellm" },
     { name = "loguru" },
     { name = "mcp" },
@@ -1524,6 +1534,7 @@ dependencies = [
     { name = "pytz" },
     { name = "strands-agents", extra = ["litellm"] },
     { name = "strands-agents-tools" },
+    { name = "substack-api" },
     { name = "tools" },
     { name = "tree" },
 ]
@@ -1541,6 +1552,7 @@ requires-dist = [
     { name = "google-auth", specifier = ">=2.40.3" },
     { name = "google-auth-oauthlib", specifier = ">=1.2.2" },
     { name = "ipykernel", specifier = ">=6.30.0" },
+    { name = "isodate", specifier = ">=0.7.2" },
     { name = "litellm", specifier = ">=1.72.9" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "mcp", specifier = ">=1.12.0" },
@@ -1550,6 +1562,7 @@ requires-dist = [
     { name = "pytz", specifier = ">=2025.2" },
     { name = "strands-agents", extras = ["litellm"], specifier = ">=1.0.1" },
     { name = "strands-agents-tools", specifier = ">=0.2.1" },
+    { name = "substack-api", specifier = ">=1.1.1" },
     { name = "tools", specifier = ">=1.0.2" },
     { name = "tree", specifier = ">=0.2.4" },
 ]
@@ -2335,6 +2348,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f3/0e/de478364b47def72172ccb09639a7a65de8e10602f05cca2b7b17cfc0e15/strands_agents_tools-0.2.1.tar.gz", hash = "sha256:9bae05e3510478f8898cfcfd8bad7e044fcf9473ad484d5e4b04a79e1832e2ea", size = 321499 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7b/47/340dfce9f5bdd9bd6cbb8dbdfbf09ce2257fc43256bbacfc3b410bfccaa8/strands_agents_tools-0.2.1-py3-none-any.whl", hash = "sha256:5e1dd85d8db07d226b8f4b60e932123a8c7ddebc3dbe5afc7e4a2aafb641dcaa", size = 229183 },
+]
+
+[[package]]
+name = "substack-api"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fd/39/2ba19c19022422c8283d8d67b4134f99df2c67043eee47dc46a29851b861/substack_api-1.1.1.tar.gz", hash = "sha256:7cd865062121d4597f1008e108336324374f376bc090c67beb7b7c1671fbdbe3", size = 19782 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/ce/777b7c981a87e8b4f71697206da6f262065e8af384567fd82f40b7e8b754/substack_api-1.1.1-py3-none-any.whl", hash = "sha256:67ade6187c06fbecbdc49f608a8c2e07ff1a8d7a2deba19ae4a987301e6d2f30", size = 13243 },
 ]
 
 [[package]]

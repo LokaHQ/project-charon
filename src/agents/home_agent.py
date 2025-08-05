@@ -8,6 +8,7 @@ from src.tools.home_agent_tools import (
     movies_agent_query,
     recommender_agent_query,
 )
+from src.tools.celander_tools import get_events, create_event
 from src.utils.prompts import HOME_AGENT_PROMPT
 
 
@@ -27,4 +28,10 @@ class HomeAgent(AgentAbstract):
 
     def get_tools(self):
         """Return the list of tools available for this agent."""
-        return [book_agent_query, movies_agent_query, recommender_agent_query]
+        return [
+            book_agent_query,
+            movies_agent_query,
+            recommender_agent_query,
+            get_events,
+            create_event,
+        ]

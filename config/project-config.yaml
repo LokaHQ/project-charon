@@ -20,3 +20,8 @@ books_agent:
 movies_agent:
   model:
     model_id: "openrouter/openrouter/horizon-beta"
+recommender_agent:
+  model:
+    model_id: "openrouter/openrouter/horizon-beta"
+  substack_newsletters_file: "data/substack_newsletters.json"
+  youtube_channels_file: "data/youtube_channels.json"

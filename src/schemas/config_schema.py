@@ -66,6 +66,23 @@ class GitHubAgentConfig(BaseModel):
     )
 
 
+class RecommenderAgentConfig(BaseModel):
+    """Configuration for the recommender agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for recommender agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+    substack_directory: str = Field(
+        ...,
+        description="Directory where Substack newsletters are stored",
+    )
+    youtube_directory: str = Field(
+        ...,
+        description="Directory where YouTube channels are stored",
+    )
+
+
 class Config(BaseModel):
     """Main configuration schema."""
 
@@ -81,4 +98,7 @@ class Config(BaseModel):
 
     github_agent: GitHubAgentConfig = Field(
         ..., description="GitHub agent configuration"
+    )
+    recommender_agent: RecommenderAgentConfig = Field(
+        ..., description="Recommender agent configuration"
     )

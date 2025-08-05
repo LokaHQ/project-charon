@@ -34,17 +34,14 @@ def get_post_metadata(post: Post) -> SubstackPostMetadata:
         Dictionary containing post metadata.
     """
     metadata = post.get_metadata()
-    content = post.get_content() or ""
-
-    content_trunicated = content[:1000] if content else ""
 
     return SubstackPostMetadata(
         title=metadata["title"],
-        id=metadata["id"],
+        id=str(metadata["id"]),
         post_date=metadata["post_date"],
         canonical_url=metadata["canonical_url"],
         summary=metadata["description"] or "",
-        content=content_trunicated,
+        content=metadata["truncated_body_text"],
         word_count=metadata.get("wordcount", 0),
     )
 
@@ -64,3 +61,16 @@ def get_post_metadata_from_newsletter(newsletter_url: str, limit: int = 5) -> li
     posts = newsletter.get_posts(limit=limit)
 
     return [get_post_metadata(post) for post in posts]
+
+
+def main():
+    # Example usage
+    newsletter_url = "https://www.noahpinion.blog/"
+    posts = get_recent_posts(newsletter_url, limit=5)
+    post = posts[0]
+    metadata = post.get_metadata()
+    print(metadata["truncated_body_text"])
+
+
+if __name__ == "__main__":
+    main()

@@ -4,7 +4,7 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from src.utils.substack_api_utils import (
     get_recent_posts,
-    get_post_metadata_from_newsletter,
+    get_post_metadata,
 )
 from src.utils.youtube_api_utils import YouTubeMonitor
 from strands import tool
@@ -86,9 +86,7 @@ def get_recent_posts_from_newsletter(newsletter_url: str, limit: int = 5) -> lis
     try:
         posts = get_recent_posts(newsletter_url, limit)
         logger.info(f"Retrieved {len(posts)} recent posts from {newsletter_url}.")
-        metadata = [
-            get_post_metadata_from_newsletter(newsletter_url, limit) for post in posts
-        ]
+        metadata = [get_post_metadata(post) for post in posts]
         logger.info(f"Extracted metadata for {len(metadata)} posts.")
         return metadata
 

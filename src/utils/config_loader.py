@@ -9,6 +9,7 @@ from schemas.config_schema import (
     Config,
     FilesAgentConfig,
     ModelConfig,
+    RecommenderAgentConfig,
     TaskAgentConfig,
     GitHubAgentConfig,
     BooksAgentConfig,
@@ -77,6 +78,15 @@ def load_config(config_path: str = "") -> Config:
         github_username=raw_config["github_agent"]["github_username"],
     )
 
+    recommender_model_config = ModelConfig(
+        model_id=raw_config["recommender_agent"]["model"]["model_id"],
+    )
+    recommender_agent_config = RecommenderAgentConfig(
+        model=recommender_model_config,
+        youtube_directory=raw_config["recommender_agent"]["youtube_channels_file"],
+        substack_directory=raw_config["recommender_agent"]["substack_newsletters_file"],
+    )
+
     return Config(
         files_agent=files_agent_config,
         calendar_agent=calendar_agent_config,
@@ -84,4 +94,5 @@ def load_config(config_path: str = "") -> Config:
         github_agent=github_agent_config,
         movies_agent=movie_agent_config,
         books_agent=book_agent_config,
+        recommender_agent=recommender_agent_config,
     )

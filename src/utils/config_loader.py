@@ -9,6 +9,8 @@ from schemas.config_schema import (
     Config,
     FilesAgentConfig,
     ModelConfig,
+    TaskAgentConfig,
+    GitHubAgentConfig,
     HomeAgentConfig,
 )
 
@@ -56,8 +58,23 @@ def load_config(config_path: str = "") -> Config:
 
     home_agent_config = HomeAgentConfig(model=home_model_config)
 
+    task_model_config = ModelConfig(
+        model_id=raw_config["task_agent"]["model"]["model_id"],
+    )
+    task_agent_config = TaskAgentConfig(model=task_model_config)
+
+    github_model_config = ModelConfig(
+        model_id=raw_config["github_agent"]["model"]["model_id"],
+    )
+    github_agent_config = GitHubAgentConfig(
+        model=github_model_config,
+        github_username=raw_config["github_agent"]["github_username"],
+    )
+
     return Config(
         files_agent=files_agent_config,
         calendar_agent=calendar_agent_config,
+        task_agent=task_agent_config,
+        github_agent=github_agent_config,
         home_agent=home_agent_config,
     )

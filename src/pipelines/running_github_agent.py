@@ -1,19 +1,20 @@
-import sys
 from pathlib import Path
+import sys
 
-sys.path.append(str(Path(__file__).parent.parent))
-from agents.google_calendar_agent import CalendarAgent
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from src.agents.github_agent import GitHubAgent
 
 
 def main():
     """
-    Main function to run the Google Calendar agent.
+    Main function to run the GitHub agent.
     It initializes the agent with the necessary tools and configurations,
+    and starts an interactive loop for user commands.
     """
-    calendar_agent = CalendarAgent()
+    github_agent = GitHubAgent()
 
-    print("Welcome to the Google Calendar Agent!")
-    print("You can ask me to retrieve events or create new events.")
+    print("Welcome to the GitHub Agent!")
+    print("You can ask me to manage your repositories, issues, and pull requests.")
     print("Type 'exit' to quit.")
 
     while True:
@@ -21,7 +22,7 @@ def main():
         if user_input.lower() == "exit":
             break
 
-        response = calendar_agent.query(user_input)
+        response = github_agent.query(user_input)
         print(
             f"Agent: {response.message if hasattr(response, 'message') else response}"
         )

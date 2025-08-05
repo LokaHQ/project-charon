@@ -7,6 +7,13 @@ files_agent:
 calendar_agent:
   model:
     model_id: "openrouter/openrouter/horizon-beta"
+task_agent:
+  model:
+    model_id: "openrouter/openrouter/horizon-beta"
+github_agent:
+  model:
+    model_id: "openrouter/openrouter/horizon-beta"
+  github_username: "PetarKalinovski"
 home_agent:
   model:
     model_id: "openrouter/openrouter/horizon-beta"

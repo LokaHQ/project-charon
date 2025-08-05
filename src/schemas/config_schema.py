@@ -36,6 +36,27 @@ class HomeAgentConfig(BaseModel):
     )
 
 
+class TaskAgentConfig(BaseModel):
+    """Configuration for the task agent"""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for task agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
+class GitHubAgentConfig(BaseModel):
+    """Configuration for the GitHub agent."""
+
+    github_username: str = Field(
+        ..., description="GitHub username for the agent to interact with repositories"
+    )
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for GitHub agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
 class Config(BaseModel):
     """Main configuration schema."""
 
@@ -44,3 +65,8 @@ class Config(BaseModel):
         ..., description="Calendar agent configuration"
     )
     home_agent: HomeAgentConfig = Field(..., description="Home agent configuration")
+    task_agent: TaskAgentConfig = Field(..., description="Task agent configuration")
+
+    github_agent: GitHubAgentConfig = Field(
+        ..., description="GitHub agent configuration"
+    )

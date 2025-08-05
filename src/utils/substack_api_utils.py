@@ -61,16 +61,3 @@ def get_post_metadata_from_newsletter(newsletter_url: str, limit: int = 5) -> li
     posts = newsletter.get_posts(limit=limit)
 
     return [get_post_metadata(post) for post in posts]
-
-
-def main():
-    # Example usage
-    newsletter_url = "https://www.noahpinion.blog/"
-    posts = get_recent_posts(newsletter_url, limit=5)
-    post = posts[0]
-    metadata = post.get_metadata()
-    print(metadata["truncated_body_text"])
-
-
-if __name__ == "__main__":
-    main()

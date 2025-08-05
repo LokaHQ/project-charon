@@ -83,6 +83,15 @@ class RecommenderAgentConfig(BaseModel):
     )
 
 
+class HomeAgentConfig(BaseModel):
+    """Configuration for the home agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for home agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
 class Config(BaseModel):
     """Main configuration schema."""
 
@@ -102,3 +111,4 @@ class Config(BaseModel):
     recommender_agent: RecommenderAgentConfig = Field(
         ..., description="Recommender agent configuration"
     )
+    home_agent: HomeAgentConfig = Field(..., description="Home agent configuration")

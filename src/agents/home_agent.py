@@ -19,8 +19,8 @@ class HomeAgent(AgentAbstract):
     """
 
     def get_agent_config(self):
-        """Return the Task agent configuration."""
-        return self.config.books_agent
+        """Return the Home agent configuration."""
+        return self.config.home_agent
 
     def get_prompt(self):
         """Return the system prompt for this agent."""

@@ -8,6 +8,7 @@ from schemas.config_schema import (
     CalendarAgentConfig,
     Config,
     FilesAgentConfig,
+    HomeAgentConfig,
     ModelConfig,
     RecommenderAgentConfig,
     TaskAgentConfig,
@@ -87,6 +88,11 @@ def load_config(config_path: str = "") -> Config:
         substack_directory=raw_config["recommender_agent"]["substack_newsletters_file"],
     )
 
+    home_model_config = ModelConfig(
+        model_id=raw_config["home_agent"]["model"]["model_id"],
+    )
+    home_agent_config = HomeAgentConfig(model=home_model_config)
+
     return Config(
         files_agent=files_agent_config,
         calendar_agent=calendar_agent_config,
@@ -95,4 +101,5 @@ def load_config(config_path: str = "") -> Config:
         movies_agent=movie_agent_config,
         books_agent=book_agent_config,
         recommender_agent=recommender_agent_config,
+        home_agent=home_agent_config,
     )

@@ -10,6 +10,7 @@ from src.utils.youtube_api_utils import YouTubeMonitor
 from strands import tool
 import json
 from loguru import logger
+from src.utils.config_loader import load_config
 
 
 @tool
@@ -26,8 +27,13 @@ def add_substack_newsletter_to_monitor(
     Returns:
         str: Confirmation message.
     """
-    path_url = "/home/petar/Documents/project-charon/data/substack_newsletters.json"
-
+    config = load_config()
+    if not config.recommender_agent.substack_directory:
+        logger.error(
+            "Substack newsletters directory is not configured in the project config."
+        )
+        return "Substack newsletters directory is not configured in the project config."
+    path_url = config.recommender_agent.substack_directory
     try:
         with open(path_url) as file:
             newsletters = json.load(file)
@@ -60,7 +66,15 @@ def get_all_newsletters() -> list:
     Returns:
         list: List of Substack newsletter URLs.
     """
-    path_url = "/home/petar/Documents/project-charon/data/substack_newsletters.json"
+    config = load_config()
+    if not config.recommender_agent.substack_directory:
+        logger.error(
+            "Substack newsletters directory is not configured in the project config."
+        )
+        return [
+            "Substack newsletters directory is not configured in the project config."
+        ]
+    path_url = config.recommender_agent.substack_directory
 
     try:
         with open(path_url) as file:
@@ -127,7 +141,13 @@ def get_all_monitored_youtube_channels() -> list:
     Returns:
         list: List of YouTube channel URLs.
     """
-    path_url = "/home/petar/Documents/project-charon/data/youtube_channels.json"
+    config = load_config()
+    if not config.recommender_agent.youtube_directory:
+        logger.error(
+            "YouTube channels directory is not configured in the project config."
+        )
+        return ["YouTube channels directory is not configured in the project config."]
+    path_url = config.recommender_agent.youtube_directory
 
     try:
         with open(path_url) as file:
@@ -151,7 +171,14 @@ def add_youtube_channel_to_monitor(channel_url: str, note_about_channel: str) ->
     Returns:
         str: Confirmation message.
     """
-    path_url = "/home/petar/Documents/project-charon/data/youtube_channels.json"
+    config = load_config()
+    if not config.recommender_agent.youtube_directory:
+        logger.error(
+            "YouTube channels directory is not configured in the project config."
+        )
+        return "YouTube channels directory is not configured in the project config."
+
+    path_url = config.recommender_agent.youtube_directory
 
     try:
         with open(path_url) as file:

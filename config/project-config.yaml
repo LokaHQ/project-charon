@@ -16,12 +16,12 @@ github_agent:
   github_username: "PetarKalinovski"
 books_agent:
   model:
-    model_id: "openrouter/openrouter/horizon-beta"
+    model_id: "openrouter/mistralai/devstral-small"
 movies_agent:
   model:
-    model_id: "openrouter/openrouter/horizon-beta"
+    model_id: "openrouter/mistralai/devstral-small"
 recommender_agent:
   model:
-    model_id: "openrouter/openrouter/horizon-beta"
+    model_id: "openrouter/mistralai/devstral-small"
   substack_newsletters_file: "data/substack_newsletters.json"
   youtube_channels_file: "data/youtube_channels.json"

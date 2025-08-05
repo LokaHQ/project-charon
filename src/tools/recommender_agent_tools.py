@@ -13,12 +13,15 @@ from loguru import logger
 
 
 @tool
-def add_substack_newsletter_to_monitor(newsletter_url: str) -> str:
+def add_substack_newsletter_to_monitor(
+    newsletter_url: str, note_about_newsletter: str
+) -> str:
     """
     Add a Substack newsletter to the monitoring list.
 
     Args:
         newsletter_url (str): The URL of the Substack newsletter.
+        note_about_newsletter (str): A note about the newsletter. For example, for the semi-analysis substack, you would write "Dylan Patel's substack".
 
     Returns:
         str: Confirmation message.
@@ -38,7 +41,7 @@ def add_substack_newsletter_to_monitor(newsletter_url: str) -> str:
         )
         return f"Newsletter {newsletter_url} is already in the monitoring list."
 
-    newsletters.append(newsletter_url)
+    newsletters.append({newsletter_url: note_about_newsletter})
 
     with open(path_url, "w") as file:
         json.dump(newsletters, file)
@@ -137,12 +140,13 @@ def get_all_monitored_youtube_channels() -> list:
 
 
 @tool
-def add_youtube_channel_to_monitor(channel_url: str) -> str:
+def add_youtube_channel_to_monitor(channel_url: str, note_about_channel: str) -> str:
     """
     Add a YouTube channel to the monitoring list.
 
     Args:
         channel_url (str): The URL or handle of the YouTube channel.
+        note_about_channel (str): A note about the YouTube channel. For example, for the Ezra Klein show, you would write "Ezra Klein's show (Favorite Podcast)".
 
     Returns:
         str: Confirmation message.
@@ -160,7 +164,7 @@ def add_youtube_channel_to_monitor(channel_url: str) -> str:
         logger.warning(f"Channel {channel_url} is already in the monitoring list.")
         return f"Channel {channel_url} is already in the monitoring list."
 
-    channels.append(channel_url)
+    channels.append({channel_url: note_about_channel})
 
     with open(path_url, "w") as file:
         json.dump(channels, file)

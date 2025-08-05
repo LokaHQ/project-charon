@@ -11,6 +11,7 @@ dependencies = [
     "ipykernel>=6.30.0",
     "litellm>=1.72.9",
     "loguru>=0.7.3",
+    "npx>=0.1.6",
     "pytest>=8.4.1",
     "pytz>=2025.2",
     "strands-agents-tools>=0.2.1",

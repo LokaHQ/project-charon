@@ -7,45 +7,40 @@ from pathlib import Path
 import sys
 
 sys.path.append(str(Path(__file__).parent.parent))
-from src.utils.config_loader import load_config
 from src.utils.prompts import GITHUB_AGENT_PROMPT
-from strands.models.litellm import LiteLLMModel
-from strands.models import BedrockModel
+from src.agents.agent import AgentAbstract  # Import your abstract base class
 
 load_dotenv()
 
 
-class GitHubAgent:
+class GitHubAgent(AgentAbstract):
     """
     A GitHub agent that can interact with GitHub repositories using the Model Context Protocol (MCP).
     It can list repositories and fetch README files from the most recent project.
     """
 
-    def __init__(self):
-        self.config = load_config()
+    def __init__(self, config=None):
+        # Initialize GitHub-specific attributes before calling super()
         self.api_key = os.getenv("GITHUB_TOKEN")
-        self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
         self.github_client = self._initialize_github_client()
-        self.model_id = self.config.github_agent.model.model_id
-        self.model = self.initialize_model()
 
-    def initialize_model(self):
+        # Call parent constructor
+        super().__init__(config)
+
+    def get_agent_config(self):
+        """Return the GitHub agent configuration."""
+        return self.config.github_agent
+
+    def get_tools(self):
         """
-        Load the model for the GitHub agent.
-        This method is called during initialization to set up the agent's model.
+        Return the list of tools from the MCP client.
+        Note: This returns an empty list since tools are loaded dynamically in query().
         """
-        if self.model_id.startswith("openrouter"):
-            return LiteLLMModel(
-                model_id=self.model_id,
-                client_args={"api_key": self.openrouter_api_key},
-                max_tokens=10000,
-                streaming=True,
-            )
-        elif self.model_id.startswith("anthropic"):
-            return BedrockModel(
-                model_id=self.model_id,
-                client_args={"region_name": "us-east-1"},
-            )
+        return []
+
+    def get_prompt(self):
+        """Return the GitHub agent system prompt."""
+        return GITHUB_AGENT_PROMPT
 
     def _initialize_github_client(self):
         """Initialize the GitHub client using MCP."""
@@ -62,15 +57,13 @@ class GitHubAgent:
     def query(self, user_input: str):
         """
         Run the agent with the provided user input.
-        This method can be called to process commands related to GitHub repositories.
+        This method overrides the parent's query method to handle MCP client context.
         """
         with self.github_client:
             agent = Agent(
                 model=self.model,
                 tools=self.github_client.list_tools_sync(),
-                system_prompt=GITHUB_AGENT_PROMPT,
+                system_prompt=self.get_prompt(),
             )
-
             response = agent(user_input)
-
-        return response
+            return response

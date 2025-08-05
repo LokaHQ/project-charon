@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
 
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.tools.books_and_movies_tools import (
     add_book_to_reading_list,
     get_book_lists,

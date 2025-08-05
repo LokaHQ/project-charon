@@ -6,10 +6,13 @@ from agents.books_agent import BookAgent
 
 
 def main():
-    books_agent = BookAgent()
-    books_agent.query(
-        "I need to add a book to my reading list. The book is 'The Way of Kings' by Brandon Sanderson. Can you add it?"
-    )
+    while True:
+        book_agent = BookAgent()
+        user_query = input("Enter your query for the Book Agent (or 'exit' to quit): ")
+        if user_query.lower() == "exit":
+            break
+        response = book_agent.query(user_query)
+        print(f"Response from Book Agent: {response}")
 
 
 if __name__ == "__main__":

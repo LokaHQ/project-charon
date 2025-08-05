@@ -27,12 +27,21 @@ class CalendarAgentConfig(BaseModel):
     )
 
 
-class HomeAgentConfig(BaseModel):
-    """Configuration for the home agent."""
+class BooksAgentConfig(BaseModel):
+    """Configuration for the books agent."""
 
     model: ModelConfig = Field(
         ...,
-        description="Model configuration for home agent (e.g., 'openrouter/openrouter/horizon-beta')",
+        description="Model configuration for books agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
+class MoviesAgentConfig(BaseModel):
+    """Configuration for the movies agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for movies agent (e.g., 'openrouter/deepseek/deepseek-r1')",
     )
 
 
@@ -64,7 +73,10 @@ class Config(BaseModel):
     calendar_agent: CalendarAgentConfig = Field(
         ..., description="Calendar agent configuration"
     )
-    home_agent: HomeAgentConfig = Field(..., description="Home agent configuration")
+    books_agent: BooksAgentConfig = Field(..., description="Books agent configuration")
+    movies_agent: MoviesAgentConfig = Field(
+        ..., description="Movies agent configuration"
+    )
     task_agent: TaskAgentConfig = Field(..., description="Task agent configuration")
 
     github_agent: GitHubAgentConfig = Field(

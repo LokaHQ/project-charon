@@ -11,7 +11,8 @@ from schemas.config_schema import (
     ModelConfig,
     TaskAgentConfig,
     GitHubAgentConfig,
-    HomeAgentConfig,
+    BooksAgentConfig,
+    MoviesAgentConfig,
 )
 
 
@@ -52,12 +53,17 @@ def load_config(config_path: str = "") -> Config:
 
     calendar_agent_config = CalendarAgentConfig(model=calendar_model_config)
 
-    home_model_config = ModelConfig(
-        model_id=raw_config["home_agent"]["model"]["model_id"],
+    movie_model_config = ModelConfig(
+        model_id=raw_config["movies_agent"]["model"]["model_id"]
     )
 
-    home_agent_config = HomeAgentConfig(model=home_model_config)
+    movie_agent_config = MoviesAgentConfig(model=movie_model_config)
 
+    book_model_config = ModelConfig(
+        model_id=raw_config["books_agent"]["model"]["model_id"]
+    )
+
+    book_agent_config = BooksAgentConfig(model=book_model_config)
     task_model_config = ModelConfig(
         model_id=raw_config["task_agent"]["model"]["model_id"],
     )
@@ -76,5 +82,6 @@ def load_config(config_path: str = "") -> Config:
         calendar_agent=calendar_agent_config,
         task_agent=task_agent_config,
         github_agent=github_agent_config,
-        home_agent=home_agent_config,
+        movies_agent=movie_agent_config,
+        books_agent=book_agent_config,
     )

@@ -14,6 +14,9 @@ github_agent:
   model:
     model_id: "openrouter/openrouter/horizon-beta"
   github_username: "PetarKalinovski"
-home_agent:
+books_agent:
+  model:
+    model_id: "openrouter/openrouter/horizon-beta"
+movies_agent:
   model:
     model_id: "openrouter/openrouter/horizon-beta"

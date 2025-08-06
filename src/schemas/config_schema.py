@@ -27,6 +27,24 @@ class CalendarAgentConfig(BaseModel):
     )
 
 
+class BooksAgentConfig(BaseModel):
+    """Configuration for the books agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for books agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
+class MoviesAgentConfig(BaseModel):
+    """Configuration for the movies agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for movies agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
 class TaskAgentConfig(BaseModel):
     """Configuration for the task agent"""
 
@@ -48,6 +66,32 @@ class GitHubAgentConfig(BaseModel):
     )
 
 
+class RecommenderAgentConfig(BaseModel):
+    """Configuration for the recommender agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for recommender agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+    substack_directory: str = Field(
+        ...,
+        description="Directory where Substack newsletters are stored",
+    )
+    youtube_directory: str = Field(
+        ...,
+        description="Directory where YouTube channels are stored",
+    )
+
+
+class HomeAgentConfig(BaseModel):
+    """Configuration for the home agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for home agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
 class Config(BaseModel):
     """Main configuration schema."""
 
@@ -55,8 +99,16 @@ class Config(BaseModel):
     calendar_agent: CalendarAgentConfig = Field(
         ..., description="Calendar agent configuration"
     )
+    books_agent: BooksAgentConfig = Field(..., description="Books agent configuration")
+    movies_agent: MoviesAgentConfig = Field(
+        ..., description="Movies agent configuration"
+    )
     task_agent: TaskAgentConfig = Field(..., description="Task agent configuration")
 
     github_agent: GitHubAgentConfig = Field(
         ..., description="GitHub agent configuration"
     )
+    recommender_agent: RecommenderAgentConfig = Field(
+        ..., description="Recommender agent configuration"
+    )
+    home_agent: HomeAgentConfig = Field(..., description="Home agent configuration")

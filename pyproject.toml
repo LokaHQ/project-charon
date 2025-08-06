@@ -23,6 +23,16 @@ dependencies = [
     "tree>=0.2.4",
     "substack-api>=1.1.1",
     "isodate>=0.7.2",
+    "pyaudio>=0.2.14",
+    "aws-sdk-bedrock-runtime>=0.0.2",
+    "smithy-aws-core>=0.0.3",
+    "kokoro>=0.9.4",
+    "soundfile>=0.13.1",
+    "pip>=25.2",
+    "misaki[en]>=0.9.4",
+    "gradio>=5.41.0",
+    "spaces>=0.39.0",
+    "sounddevice>=0.5.2",
 ]
 
 [dependency-groups]

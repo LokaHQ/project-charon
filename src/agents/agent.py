@@ -74,7 +74,7 @@ class AgentAbstract(ABC):
                 max_tokens=10000,
                 streaming=True,
             )
-        elif self.model_id.startswith("anthropic"):
+        elif "anthropic" in self.model_id:
             return BedrockModel(
                 model_id=self.model_id,
                 client_args={"region_name": "us-east-1"},

@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
-from src.tools.books_and_movies_tools import (
+from src.tools.movies_tools import (
     add_movie_or_show_to_watchlist,
     get_movies_and_show_list,
     mark_movie_or_show_watched,

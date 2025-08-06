@@ -15,6 +15,7 @@ from schemas.config_schema import (
     GitHubAgentConfig,
     BooksAgentConfig,
     MoviesAgentConfig,
+    BigBossOrchestratorAgentConfig,
 )
 
 
@@ -93,6 +94,13 @@ def load_config(config_path: str = "") -> Config:
     )
     home_agent_config = HomeAgentConfig(model=home_model_config)
 
+    big_boss_model_config = ModelConfig(
+        model_id=raw_config["big_boss_orchestrator_agent"]["model"]["model_id"],
+    )
+    big_boss_orchestrator_agent_config = BigBossOrchestratorAgentConfig(
+        model=big_boss_model_config,
+    )
+
     return Config(
         files_agent=files_agent_config,
         calendar_agent=calendar_agent_config,
@@ -102,4 +110,5 @@ def load_config(config_path: str = "") -> Config:
         books_agent=book_agent_config,
         recommender_agent=recommender_agent_config,
         home_agent=home_agent_config,
+        big_boss_orchestrator_agent=big_boss_orchestrator_agent_config,
     )

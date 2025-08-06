@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.tools.celander_tools import create_event, get_events
 from src.utils.prompts import CALENDAR_AGENT_PROMPT
 from src.agents.agent import AgentAbstract

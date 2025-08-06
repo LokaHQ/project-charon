@@ -92,6 +92,15 @@ class HomeAgentConfig(BaseModel):
     )
 
 
+class BigBossOrchestratorAgentConfig(BaseModel):
+    """Configuration for the Big Boss Orchestrator Agent."""
+
+    model: ModelConfig = Field(
+        ...,
+        description="Model configuration for Big Boss Orchestrator Agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+
 class Config(BaseModel):
     """Main configuration schema."""
 
@@ -112,3 +121,7 @@ class Config(BaseModel):
         ..., description="Recommender agent configuration"
     )
     home_agent: HomeAgentConfig = Field(..., description="Home agent configuration")
+
+    big_boss_orchestrator_agent: BigBossOrchestratorAgentConfig = Field(
+        ..., description="Big Boss Orchestrator agent configuration"
+    )

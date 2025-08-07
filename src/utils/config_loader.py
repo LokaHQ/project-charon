@@ -99,6 +99,9 @@ def load_config(config_path: str = "") -> Config:
     )
     big_boss_orchestrator_agent_config = BigBossOrchestratorAgentConfig(
         model=big_boss_model_config,
+        sleep_tracking_file=raw_config["big_boss_orchestrator_agent"][
+            "sleep_tracking_file"
+        ],
     )
 
     return Config(

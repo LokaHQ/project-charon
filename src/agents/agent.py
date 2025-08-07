@@ -32,6 +32,7 @@ class AgentAbstract(ABC):
         self.config = config or load_config()
         self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
         self.model_id = self.get_agent_config().model.model_id
+        self.callback_handler = self.pass_callback_handler() or None
         self.model = self._initialize_model()
         self.agent = self._initialize_agent()
 
@@ -65,6 +66,17 @@ class AgentAbstract(ABC):
         """
         pass
 
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Args:
+            callback_handler: The callback handler to be used by the model.
+        Returns:
+            The callback handler passed to the model.
+        """
+        pass
+
     def _initialize_model(self):
         """Initialize the appropriate model based on configuration."""
         if self.model_id.startswith("openrouter"):
@@ -85,12 +97,23 @@ class AgentAbstract(ABC):
     def _initialize_agent(self):
         """Initialize the agent with tools, model, and conversation manager."""
         tools = self.get_tools()
-        self.agent = Agent(
-            model=self.model,
-            tools=tools,
-            conversation_manager=SlidingWindowConversationManager(window_size=10),
-            system_prompt=self.get_prompt(),
-        )
+
+        if self.callback_handler:
+            self.agent = Agent(
+                model=self.model,
+                tools=tools,
+                conversation_manager=SlidingWindowConversationManager(window_size=10),
+                system_prompt=self.get_prompt(),
+                callback_handler=self.callback_handler,
+            )
+        else:
+            self.agent = Agent(
+                model=self.model,
+                tools=tools,
+                conversation_manager=SlidingWindowConversationManager(window_size=10),
+                system_prompt=self.get_prompt(),
+            )
+
         return self.agent
 
     def query(self, question: str):

@@ -99,6 +99,10 @@ class BigBossOrchestratorAgentConfig(BaseModel):
         ...,
         description="Model configuration for Big Boss Orchestrator Agent (e.g., 'openrouter/deepseek/deepseek-r1')",
     )
+    sleep_tracking_file: str = Field(
+        ...,
+        description="Path to the sleep tracking data file (e.g., 'data/sleep_tracking.json')",
+    )
 
 
 class Config(BaseModel):

@@ -31,3 +31,4 @@ home_agent:
 big_boss_orchestrator_agent:
   model:
     model_id: "us.anthropic.claude-sonnet-4-20250514-v1:0"
+  sleep_tracking_file: "data/sleep_tracking.json"

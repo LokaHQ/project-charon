@@ -1,6 +1,7 @@
 from kokoro import KPipeline
 import sounddevice as sd
 import numpy as np
+from rich.panel import Panel
 from rich import print as rprint
 
 
@@ -24,6 +25,7 @@ def tts_callback_handler(**kwargs):
                     part.strip() for part in text.split("\n") if part.strip()
                 ]
 
+                # Create cleaned versions for TTS
                 clean_parts = []
                 for part in formatted_parts:
                     clean_part = (
@@ -31,21 +33,27 @@ def tts_callback_handler(**kwargs):
                     )
                     clean_parts.append(clean_part)
 
+                # Join cleaned parts for TTS processing
                 text_readable = "\n".join(clean_parts)
 
+                # Generate audio with the cleaned text
                 generator = pipeline(
                     text_readable, voice=blend, speed=1.2, split_pattern=r"\n+"
                 )
 
-                audio_parts = list(generator)
-
-                rprint("[bold dark_magenta]💀🛶  Charon: [/bold dark_magenta]")
+                # Now display formatted parts in sync with audio
+                audio_parts = list(generator)  # Convert to list to access by index
 
                 for i, (formatted_part, (gs, ps, audio)) in enumerate(
                     zip(formatted_parts, audio_parts)
                 ):
                     # Display with original formatting
-                    rprint(f"{formatted_part}")
+                    rprint(
+                        Panel(
+                            f"[bold dark_magenta]💀🛶 Charon:[/bold dark_magenta] {formatted_part}"
+                        )
+                    )
+
                     # Play corresponding audio
                     sd.play(audio, 24000)
                     sd.wait()

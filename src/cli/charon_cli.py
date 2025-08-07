@@ -20,6 +20,7 @@ from rich.align import Align
 # Add the project root to Python path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.agents.big_boss_orchestrator_agent import BigBossOrchestratorAgent
+from src.utils.charon_ascii_art import CHARON_ART_ASCII, THE_FARRYMANS_ASSISTANT_ASCII
 
 # Initialize rich console and typer app
 console = Console()
@@ -39,9 +40,9 @@ class CharonCLI:
     def display_banner(self):
         """Display the mythological Charon-themed banner"""
         banner = Text()
-        banner.append("💀🛶", style="bold magenta")
-        banner.append("CHARON", style="bold dark_magenta")
-        banner.append(" - The Ferryman's Assistant", style="bold magenta")
+        banner.append(CHARON_ART_ASCII, style="bold magenta")
+        banner.append(THE_FARRYMANS_ASSISTANT_ASCII, style="magenta")
+        banner.append("")
 
         subtitle = Text(
             "Guiding you across the river of daily complexities\n"

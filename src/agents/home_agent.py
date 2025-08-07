@@ -10,6 +10,7 @@ from src.tools.home_agent_tools import (
 )
 from src.tools.celander_tools import get_events, create_event
 from src.utils.prompts import HOME_AGENT_PROMPT
+from src.utils.callback_hanlder_subagents import home_agent_callback
 
 
 class HomeAgent(AgentAbstract):
@@ -35,3 +36,12 @@ class HomeAgent(AgentAbstract):
             get_events,
             create_event,
         ]
+
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return home_agent_callback

@@ -1,7 +1,6 @@
 from kokoro import KPipeline
 import sounddevice as sd
 import numpy as np
-from rich.panel import Panel
 from rich import print as rprint
 
 
@@ -44,16 +43,18 @@ def tts_callback_handler(**kwargs):
                 # Now display formatted parts in sync with audio
                 audio_parts = list(generator)  # Convert to list to access by index
 
+                rprint("\n [bold dark_magenta]💀🛶 Charon:[/bold dark_magenta]")
                 for i, (formatted_part, (gs, ps, audio)) in enumerate(
                     zip(formatted_parts, audio_parts)
                 ):
                     # Display with original formatting
-                    rprint(
-                        Panel(
-                            f"[bold dark_magenta]💀🛶 Charon:[/bold dark_magenta] {formatted_part}"
-                        )
-                    )
+                    rprint(f"{formatted_part}")
 
                     # Play corresponding audio
                     sd.play(audio, 24000)
                     sd.wait()
+
+    if "current_tool_use" in kwargs and kwargs["current_tool_use"].get("name"):
+        tool_name = kwargs["current_tool_use"]["name"]
+        if "query" in tool_name:
+            rprint("   🔄 [dim yellow]Consulting specialized agents...[/dim yellow]")

@@ -13,7 +13,7 @@ from src.tools.recommender_agent_tools import (
 from src.agents.agent import AgentAbstract
 from dotenv import load_dotenv
 from src.utils.prompts import RECOMMENDER_AGENT_PROMPT
-
+from src.utils.callback_hanlder_subagents import recommender_agent_callback
 
 load_dotenv()
 
@@ -42,3 +42,12 @@ class RecommenderAgent(AgentAbstract):
             get_all_monitored_youtube_channels,
             add_youtube_channel_to_monitor,
         ]
+
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return recommender_agent_callback

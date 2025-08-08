@@ -13,7 +13,7 @@ from src.tools.sleep_tracking_tools import (
     update_weekly_summary,
 )
 from src.utils.prompts import BIG_BOSS_ORCHESTRATOR_AGENT_PROMPT
-from src.utils.tts_callback_handler import tts_callback_handler
+from src.utils.tts_callback_handler import tts_callback_handler, silent_callback_handler
 from strands_tools import journal
 
 
@@ -22,6 +22,16 @@ class BigBossOrchestratorAgent(AgentAbstract):
     The Big Boss Orchestrator Agent that coordinates between different agents.
     It can query the Task Agent and Home Agent.
     """
+
+    def __init__(self, silent=False):
+        """
+        Initialize the Big Boss Orchestrator Agent.
+
+        Args:
+            silent (bool): If True, the agent will operate in silent mode.
+        """
+        self.silent = silent
+        super().__init__()
 
     def get_agent_config(self):
         """Return the specific configuration section for this agent."""
@@ -49,4 +59,7 @@ class BigBossOrchestratorAgent(AgentAbstract):
         Returns:
             The callback handler passed to the model.
         """
-        return tts_callback_handler
+        if self.silent:
+            return silent_callback_handler
+        else:
+            return tts_callback_handler

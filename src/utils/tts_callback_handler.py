@@ -57,3 +57,21 @@ def tts_callback_handler(**kwargs):
                 rprint(
                     "   🔄 [dim yellow]Consulting specialized agents...[/dim yellow]"
                 )
+
+
+def silent_callback_handler(**kwargs):
+    """
+    A silent callback handler that does nothing.
+    This is used when the agent operates in silent mode.
+    """
+    with Status(
+        "[bold dark_magenta]Navigating your request...",
+        spinner="bouncingBar",
+    ):
+        if "message" in kwargs and kwargs["message"].get("role") == "assistant":
+            for content in kwargs["message"]["content"]:
+                if isinstance(content, dict) and "text" in content:
+                    text = content["text"]
+
+                    rprint("\n [bold dark_magenta]💀🛶 Charon: [/bold dark_magenta]")
+                    rprint(text)

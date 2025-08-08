@@ -11,7 +11,11 @@ from typing import Optional
 import requests
 from dotenv import load_dotenv
 from loguru import logger
+from pathlib import Path
+import sys
 
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from src.utils.config_loader import load_config
 
 load_dotenv()
 
@@ -25,7 +29,8 @@ def get_book_lists() -> str:
     Returns:
         str: JSON string containing full book data
     """
-    book_paths = "/home/petar/Documents/project-charon/data/book_list.json"
+    config = load_config()
+    book_paths = config.books_agent.book_list_file
     try:
         with open(book_paths) as f:
             books = json.load(f)
@@ -63,8 +68,8 @@ def add_book_to_reading_list(
     Returns:
         str: Confirmation message
     """
-    book_paths = "/home/petar/Documents/project-charon/data/book_list.json"
-
+    config = load_config()
+    book_paths = config.books_agent.book_list_file
     try:
         with open(book_paths) as f:
             books = json.load(f)
@@ -121,8 +126,8 @@ def mark_book_read(
     Returns:
         str: Confirmation message
     """
-    book_paths = "/home/petar/Documents/project-charon/data/book_list.json"
-
+    config = load_config()
+    book_paths = config.books_agent.book_list_file
     try:
         with open(book_paths) as f:
             books = json.load(f)

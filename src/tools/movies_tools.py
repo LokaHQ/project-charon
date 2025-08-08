@@ -3,7 +3,8 @@ from pathlib import Path
 
 from strands import tool
 
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
+from src.utils.config_loader import load_config
 import json
 import os
 from datetime import datetime
@@ -26,9 +27,8 @@ def get_movies_and_show_list() -> str:
     Returns:
         str: JSON string containing full movie/show data
     """
-    # config=load_config()
-
-    list_path = "/home/petar/Documents/project-charon/data/movie_and_show.json"
+    config = load_config()
+    list_path = config.movies_agent.movie_list_file
 
     try:
         with open(list_path) as f:
@@ -67,7 +67,8 @@ def add_movie_or_show_to_watchlist(
     Returns:
         str: Confirmation message
     """
-    list_path = "/home/petar/Documents/project-charon/data/movie_and_show.json"
+    config = load_config()
+    list_path = config.movies_agent.movie_list_file
     try:
         with open(list_path) as f:
             movies = json.load(f)
@@ -113,8 +114,8 @@ def mark_movie_or_show_watched(
     Returns:
         str: Confirmation message
     """
-    list_path = "/home/petar/Documents/project-charon/data/movie_and_show.json"
-
+    config = load_config()
+    list_path = config.movies_agent.movie_list_file
     try:
         with open(list_path) as f:
             movies = json.load(f)

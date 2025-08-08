@@ -34,6 +34,10 @@ class BooksAgentConfig(BaseModel):
         ...,
         description="Model configuration for books agent (e.g., 'openrouter/deepseek/deepseek-r1')",
     )
+    book_list_file: str = Field(
+        ...,
+        description="Path to the book list file (e.g., 'data/book_list.json')",
+    )
 
 
 class MoviesAgentConfig(BaseModel):
@@ -42,6 +46,10 @@ class MoviesAgentConfig(BaseModel):
     model: ModelConfig = Field(
         ...,
         description="Model configuration for movies agent (e.g., 'openrouter/deepseek/deepseek-r1')",
+    )
+
+    movie_list_file: str = Field(
+        ..., description="Path to the movie and show list file"
     )
 
 

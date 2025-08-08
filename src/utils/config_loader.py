@@ -60,13 +60,19 @@ def load_config(config_path: str = "") -> Config:
         model_id=raw_config["movies_agent"]["model"]["model_id"]
     )
 
-    movie_agent_config = MoviesAgentConfig(model=movie_model_config)
+    movie_agent_config = MoviesAgentConfig(
+        model=movie_model_config,
+        movie_list_file=raw_config["movies_agent"]["movie_list_file"],
+    )
 
     book_model_config = ModelConfig(
         model_id=raw_config["books_agent"]["model"]["model_id"]
     )
 
-    book_agent_config = BooksAgentConfig(model=book_model_config)
+    book_agent_config = BooksAgentConfig(
+        model=book_model_config,
+        book_list_file=raw_config["books_agent"]["book_list_file"],
+    )
     task_model_config = ModelConfig(
         model_id=raw_config["task_agent"]["model"]["model_id"],
     )

@@ -17,9 +17,11 @@ github_agent:
 books_agent:
   model:
     model_id: "us.anthropic.claude-sonnet-4-20250514-v1:0"
+  book_list_file: "data/book_list.json"
 movies_agent:
   model:
     model_id: "us.anthropic.claude-sonnet-4-20250514-v1:0"
+  movie_list_file: "data/movie_and_show.json"
 recommender_agent:
   model:
     model_id: "us.anthropic.claude-sonnet-4-20250514-v1:0"

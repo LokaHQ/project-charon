@@ -311,13 +311,13 @@ def chat(
                     break
 
                 # Process the request
-                with console.status(
-                    "[bold dark_magenta]Navigating your request...",
-                    spinner="bouncingBar",
-                ):
-                    response = cli.agent.query(user_input)
+                # with console.status(
+                #     "[bold dark_magenta]Navigating your request...",
+                #     spinner="bouncingBar",
+                # ):
+                response = cli.agent.query(user_input)
 
-                # Display the response
+                # # Display the response
                 console.print()
                 cli.format_response(str(response))
 

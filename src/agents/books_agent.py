@@ -10,7 +10,8 @@ from src.tools.books_tools import (
 )
 from src.agents.agent import AgentAbstract
 from dotenv import load_dotenv
-from utils.prompts import BOOKS_AGENT_PROMPT
+from src.utils.prompts import BOOKS_AGENT_PROMPT
+from src.utils.callback_hanlder_subagents import book_agent_callback
 
 load_dotenv()
 
@@ -37,3 +38,12 @@ class BookAgent(AgentAbstract):
             mark_book_read,
             search_book,
         ]
+
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return book_agent_callback

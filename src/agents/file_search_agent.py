@@ -9,6 +9,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from src.tools.file_search_tools import find_folder_from_name
 from src.agents.agent import AgentAbstract
 from src.utils.prompts import FILE_AGENT_PROMPT
+from src.utils.callback_hanlder_subagents import file_agent_callback
 
 load_dotenv()
 
@@ -31,3 +32,11 @@ class FileSearchAgent(AgentAbstract):
             file_read,
             find_folder_from_name,
         ]
+
+    def pass_callback_handler(self):
+        """Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return file_agent_callback

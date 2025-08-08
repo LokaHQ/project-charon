@@ -11,6 +11,7 @@ from src.tools.movies_tools import (
 from src.agents.agent import AgentAbstract
 from dotenv import load_dotenv
 from utils.prompts import MOVIES_AGENT_PROMPT
+from src.utils.callback_hanlder_subagents import movie_agent_callback
 
 load_dotenv()
 
@@ -37,3 +38,12 @@ class MoviesAgent(AgentAbstract):
             mark_movie_or_show_watched,
             search_omdb_movie_or_show,
         ]
+
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return movie_agent_callback

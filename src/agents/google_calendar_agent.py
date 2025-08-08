@@ -7,6 +7,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.tools.celander_tools import create_event, get_events
 from src.utils.prompts import CALENDAR_AGENT_PROMPT
 from src.agents.agent import AgentAbstract
+from src.utils.callback_hanlder_subagents import calendar_agent_callback
 
 load_dotenv()
 
@@ -31,3 +32,12 @@ class CalendarAgent(AgentAbstract):
             create_event,
             get_events,
         ]
+
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return calendar_agent_callback

@@ -9,6 +9,7 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent))
 from src.utils.prompts import GITHUB_AGENT_PROMPT
 from src.agents.agent import AgentAbstract  # Import your abstract base class
+from src.utils.callback_hanlder_subagents import github_agent_callback
 
 load_dotenv()
 
@@ -67,3 +68,12 @@ class GitHubAgent(AgentAbstract):
             )
             response = agent(user_input)
             return response
+
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return github_agent_callback

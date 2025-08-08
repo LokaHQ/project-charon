@@ -13,6 +13,7 @@ from src.tools.task_agent_tools import (
 )
 from src.agents.agent import AgentAbstract
 from src.utils.prompts import TASK_AGENT_PROMPT
+from src.utils.callback_hanlder_subagents import task_agent_callback
 
 load_dotenv()
 
@@ -38,3 +39,12 @@ class TaskAgent(AgentAbstract):
             google_calendar_agent_query,
             github_agent_query,
         ]
+
+    def pass_callback_handler(self):
+        """
+        Pass a callback handler to the agent's model.
+
+        Returns:
+            The callback handler passed to the model.
+        """
+        return task_agent_callback

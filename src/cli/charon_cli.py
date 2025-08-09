@@ -20,6 +20,7 @@ from rich.table import Table
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.agents.big_boss_orchestrator_agent import BigBossOrchestratorAgent
 from src.utils.charon_ascii_art import CHARON_ART_ASCII, THE_FARRYMANS_ASSISTANT_ASCII
+from src.utils.tts_callback_handler import initialize_tts
 
 # Initialize rich console and typer app
 console = Console()
@@ -117,10 +118,14 @@ class CharonCLI:
         elif user_input.lower() in ["audio off", "mute"]:
             self.user_preferences["audio"] = False
             console.print("🔇 Audio disabled")
+            self.agent = BigBossOrchestratorAgent(silent=True)
             return True
         elif user_input.lower() in ["audio on", "unmute"]:
             self.user_preferences["audio"] = True
             console.print("🔊 Audio enabled")
+            self.agent = BigBossOrchestratorAgent()
+            initialize_tts()
+            console.print("[dim]🔊 TTS system initialized[/dim]")
             return True
         elif user_input.lower() == "clear":
             console.clear()
@@ -174,7 +179,6 @@ def chat(
             cli.display_banner()
             cli.show_help_panel()
 
-        # Initialize agent with progress feedback
         with console.status("[bold magenta]Initializing Charon...", spinner="dots"):
             if cli.user_preferences.get("audio", True):
                 cli.agent = BigBossOrchestratorAgent()
@@ -184,6 +188,12 @@ def chat(
         console.print(
             "🛶 [bold magenta]Ready![/bold magenta] What would you like to do?\n"
         )
+
+        # Initialize TTS if audio is enabled
+        if cli.user_preferences.get("audio", True):
+            console.status("[bold magenta]Initializing TTS...", spinner="dots")
+            initialize_tts()
+            console.print("[dim]🔊 TTS system initialized[/dim]")
 
         # Main loop with better error handling
         while True:

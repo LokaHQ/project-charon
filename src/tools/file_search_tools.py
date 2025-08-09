@@ -4,11 +4,11 @@ from pathlib import Path
 from strands import tool
 
 sys.path.append(str(Path(__file__).parent.parent))
-from loguru import logger
 
 from schemas.file_search_returns_schemas import FolderSearchResponse
 from utils.config_loader import load_config
 from utils.directory_scanning import DirectoryScanner
+from utils.callback_hanlder_subagents import log_to_session
 
 
 @tool
@@ -32,7 +32,7 @@ def find_folder_from_name(folder_name: str) -> FolderSearchResponse:
 
     config = load_config()
 
-    logger.info(
+    log_to_session(
         f"Searching for folder: {folder_name} in {config.files_agent.root_directory}"
     )
 
@@ -40,7 +40,7 @@ def find_folder_from_name(folder_name: str) -> FolderSearchResponse:
     found_folder = scanner.find_folder(folder_name)
 
     if not found_folder:
-        logger.warning(
+        log_to_session(
             f'Folder "{folder_name}" not found in {config.files_agent.root_directory}'
         )
 
@@ -56,7 +56,7 @@ def find_folder_from_name(folder_name: str) -> FolderSearchResponse:
     project_name = folder_path.name
     found_files = scanner.find_files(folder_path)
 
-    logger.info(f"Found folder {found_folder} with folder path: {folder_path}")
+    log_to_session(f"Found folder {found_folder} with folder path: {folder_path}")
 
     file_paths = [
         str(file_path) for file_path in found_files if str(file_path).endswith(".py")

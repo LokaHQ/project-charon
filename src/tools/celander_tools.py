@@ -6,7 +6,6 @@ import pytz
 from strands import tool
 
 sys.path.append(str(Path(__file__).parent.parent))
-from loguru import logger
 
 from src.schemas.calendar_agent_returns_schema import (
     CalendarCreationReturn,
@@ -15,6 +14,7 @@ from src.schemas.calendar_agent_returns_schema import (
     CalendarEventsListResponse,
 )
 from src.utils.google_calendar_auth import authenticate_calendar
+from src.utils.callback_hanlder_subagents import log_to_session
 
 
 # Function calling to get calendar events within a specified duration
@@ -41,7 +41,7 @@ def get_events(duration: str = "") -> CalendarEventsListResponse:
             time_min = start_of_week.isoformat() + "Z"
             time_max = end_of_week.isoformat() + "Z"
 
-            logger.info(
+            log_to_session(
                 f"Retrieving events for the week starting {start_of_week} to {end_of_week}."
             )
         else:
@@ -52,7 +52,7 @@ def get_events(duration: str = "") -> CalendarEventsListResponse:
                     hour=23, minute=59, second=59, microsecond=999999
                 )
                 time_max = end_of_today.isoformat() + "Z"
-                logger.info(
+                log_to_session(
                     f"Retrieving remaining events for today starting from {now.strftime('%H:%M')}"
                 )
             else:
@@ -61,7 +61,7 @@ def get_events(duration: str = "") -> CalendarEventsListResponse:
                     hour=23, minute=59, second=59, microsecond=999999
                 )
                 time_max = end_of_period.isoformat() + "Z"
-                logger.info(
+                log_to_session(
                     f"Retrieving events from now until {end_date}: {int(duration)} additional days"
                 )
 
@@ -78,7 +78,7 @@ def get_events(duration: str = "") -> CalendarEventsListResponse:
         )
         events = events_result.get("items", [])
 
-        logger.info(f"Retrieved {len(events)} events from Google Calendar.")
+        log_to_session(f"Retrieved {len(events)} events from Google Calendar.")
 
         # Convert to Pydantic models
         events_list = []
@@ -90,14 +90,14 @@ def get_events(duration: str = "") -> CalendarEventsListResponse:
             )
             events_list.append(event_response)
 
-        logger.success(f"Successfully retrieved {len(events_list)} events.")
+        log_to_session(f"Successfully retrieved {len(events_list)} events.")
 
         return CalendarEventsListResponse(
             events=events_list, total_count=len(events_list)
         )
 
     except Exception as e:
-        logger.error(f"Failed to retrieve events: {str(e)}")
+        log_to_session(f"Failed to retrieve events: {str(e)}")
         return CalendarEventsListResponse(events=[], total_count=0)
 
 
@@ -125,14 +125,14 @@ def create_event(
     Returns:
         CalendarCreationReturn: A structured response containing the status, message, event link, and event ID.
     """
-    logger.debug(
+    log_to_session(
         f"Creating event: {title} from {start_time} to {end_time} at {location}"
     )
 
     try:
         service = authenticate_calendar()
 
-        logger.info("Authenticated with Google Calendar successfully.")
+        log_to_session("Authenticated with Google Calendar successfully.")
 
         timezone = "Europe/Berlin"  # GMT+1 timezone
         tz = pytz.timezone(timezone)
@@ -162,13 +162,13 @@ def create_event(
                 "timeZone": timezone,
             },
         }
-        logger.debug(f"Event data prepared: {event}")
+        log_to_session(f"Event data prepared: {event}")
 
         created_event = (
             service.events().insert(calendarId="primary", body=event).execute()
         )
 
-        logger.success(f"Event created successfully: {created_event.get('htmlLink')}")
+        log_to_session(f"Event created successfully: {created_event.get('htmlLink')}")
 
         return CalendarCreationReturn(
             status="success",
@@ -178,7 +178,7 @@ def create_event(
         )
 
     except Exception as e:
-        logger.error(f"Failed to create event: {str(e)}")
+        log_to_session(f"Failed to create event: {str(e)}")
 
         return CalendarCreationReturn(
             status="error",

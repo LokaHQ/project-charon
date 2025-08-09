@@ -9,8 +9,8 @@ from src.utils.substack_api_utils import (
 from src.utils.youtube_api_utils import YouTubeMonitor
 from strands import tool
 import json
-from loguru import logger
 from src.utils.config_loader import load_config
+from src.utils.callback_hanlder_subagents import log_to_session
 
 
 @tool
@@ -29,7 +29,7 @@ def add_substack_newsletter_to_monitor(
     """
     config = load_config()
     if not config.recommender_agent.substack_directory:
-        logger.error(
+        log_to_session(
             "Substack newsletters directory is not configured in the project config."
         )
         return "Substack newsletters directory is not configured in the project config."
@@ -38,11 +38,11 @@ def add_substack_newsletter_to_monitor(
         with open(path_url) as file:
             newsletters = json.load(file)
     except FileNotFoundError:
-        logger.error(f"File {path_url} not found")
+        log_to_session(f"File {path_url} not found")
         newsletters = []
 
     if newsletter_url in newsletters:
-        logger.warning(
+        log_to_session(
             f"Newsletter {newsletter_url} is already in the monitoring list."
         )
         return f"Newsletter {newsletter_url} is already in the monitoring list."
@@ -51,7 +51,7 @@ def add_substack_newsletter_to_monitor(
 
     with open(path_url, "w") as file:
         json.dump(newsletters, file)
-    logger.success(
+    log_to_session(
         f"Newsletter {newsletter_url} has been added to the monitoring list."
     )
 
@@ -68,7 +68,7 @@ def get_all_newsletters() -> list:
     """
     config = load_config()
     if not config.recommender_agent.substack_directory:
-        logger.error(
+        log_to_session(
             "Substack newsletters directory is not configured in the project config."
         )
         return [
@@ -79,12 +79,12 @@ def get_all_newsletters() -> list:
     try:
         with open(path_url) as file:
             newsletters = json.load(file)
-        logger.info(
+        log_to_session(
             f"Retrieved {len(newsletters)} newsletters from the monitoring list."
         )
         return newsletters
     except FileNotFoundError:
-        logger.error(f"File {path_url} not found")
+        log_to_session(f"File {path_url} not found")
         return []
 
 
@@ -102,13 +102,13 @@ def get_recent_posts_from_newsletter(newsletter_url: str, limit: int = 5) -> lis
     """
     try:
         posts = get_recent_posts(newsletter_url, limit)
-        logger.info(f"Retrieved {len(posts)} recent posts from {newsletter_url}.")
+        log_to_session(f"Retrieved {len(posts)} recent posts from {newsletter_url}.")
         metadata = [get_post_metadata(post) for post in posts]
-        logger.info(f"Extracted metadata for {len(metadata)} posts.")
+        log_to_session(f"Extracted metadata for {len(metadata)} posts.")
         return metadata
 
     except Exception as e:
-        logger.error(f"Error fetching posts from {newsletter_url}: {e}")
+        log_to_session(f"Error fetching posts from {newsletter_url}: {e}")
         return [f"Error fetching posts from {newsletter_url}: {e}"]
 
 
@@ -126,10 +126,12 @@ def get_recent_youtube_videos(channel_url: str, limit: int = 10) -> list:
         youtube_monitor = YouTubeMonitor()
         channel_id = youtube_monitor.get_channel_id_from_url(channel_url)
         videos = youtube_monitor.get_recent_videos(channel_id, limit)
-        logger.info(f"Retrieved {len(videos)} recent videos from channel {channel_id}.")
+        log_to_session(
+            f"Retrieved {len(videos)} recent videos from channel {channel_id}."
+        )
         return videos
     except Exception as e:
-        logger.error(f"Error fetching videos from channel {channel_id}: {e}")
+        log_to_session(f"Error fetching videos from channel {channel_id}: {e}")
         return [f"Error fetching videos from channel {channel_id}: {e}"]
 
 
@@ -143,7 +145,7 @@ def get_all_monitored_youtube_channels() -> list:
     """
     config = load_config()
     if not config.recommender_agent.youtube_directory:
-        logger.error(
+        log_to_session(
             "YouTube channels directory is not configured in the project config."
         )
         return ["YouTube channels directory is not configured in the project config."]
@@ -152,10 +154,10 @@ def get_all_monitored_youtube_channels() -> list:
     try:
         with open(path_url) as file:
             channels = json.load(file)
-        logger.info(f"Retrieved {len(channels)} monitored YouTube channels.")
+        log_to_session(f"Retrieved {len(channels)} monitored YouTube channels.")
         return channels
     except FileNotFoundError:
-        logger.error(f"File {path_url} not found")
+        log_to_session(f"File {path_url} not found")
         return []
 
 
@@ -173,7 +175,7 @@ def add_youtube_channel_to_monitor(channel_url: str, note_about_channel: str) ->
     """
     config = load_config()
     if not config.recommender_agent.youtube_directory:
-        logger.error(
+        log_to_session(
             "YouTube channels directory is not configured in the project config."
         )
         return "YouTube channels directory is not configured in the project config."
@@ -184,17 +186,17 @@ def add_youtube_channel_to_monitor(channel_url: str, note_about_channel: str) ->
         with open(path_url) as file:
             channels = json.load(file)
     except FileNotFoundError:
-        logger.error(f"File {path_url} not found")
+        log_to_session(f"File {path_url} not found")
         channels = []
 
     if channel_url in channels:
-        logger.warning(f"Channel {channel_url} is already in the monitoring list.")
+        log_to_session(f"Channel {channel_url} is already in the monitoring list.")
         return f"Channel {channel_url} is already in the monitoring list."
 
     channels.append({channel_url: note_about_channel})
 
     with open(path_url, "w") as file:
         json.dump(channels, file)
-    logger.success(f"Channel {channel_url} has been added to the monitoring list.")
+    log_to_session(f"Channel {channel_url} has been added to the monitoring list.")
 
     return f"Channel {channel_url} has been added to your monitoring list."

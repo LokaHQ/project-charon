@@ -12,7 +12,7 @@ from typing import Optional
 
 import requests
 from dotenv import load_dotenv
-from loguru import logger
+from src.utils.callback_hanlder_subagents import log_to_session
 
 
 load_dotenv()
@@ -165,7 +165,9 @@ def search_omdb_movie_or_show(title: str, year: str = "", type="") -> str:
     url = "http://www.omdbapi.com/"
     params = {"apikey": api_key, "s": title, "plot": "short"}
 
-    logger.info(f"Searching OMDB for movie/show: {title} (Year: {year}, Type: {type})")
+    log_to_session(
+        f"Searching OMDB for movie/show: {title} (Year: {year}, Type: {type})"
+    )
 
     if year != "":
         params["y"] = year
@@ -178,14 +180,14 @@ def search_omdb_movie_or_show(title: str, year: str = "", type="") -> str:
         data = response.json()
 
         if data.get("Response") == "True":
-            logger.success(f"OMDB returned the following movies {data}")
+            log_to_session(f"OMDB returned the following movies {data}")
 
             return f"Found matches: {json.dumps(data)}"
 
         else:
-            logger.error("Movie not found")
+            log_to_session("Movie not found")
             return f"Movie '{title}' not found. Error: {data.get('Error', 'Unknown error')}"
 
     except Exception as e:
-        logger.error(f"Error searching for movie: {str(e)}")
+        log_to_session(f"Error searching for movie: {str(e)}")
         return f"Error searching for movie: {str(e)}"

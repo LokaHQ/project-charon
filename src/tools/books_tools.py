@@ -10,12 +10,12 @@ from typing import Optional
 
 import requests
 from dotenv import load_dotenv
-from loguru import logger
 from pathlib import Path
 import sys
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.utils.config_loader import load_config
+from src.utils.callback_hanlder_subagents import log_to_session
 
 load_dotenv()
 
@@ -101,11 +101,11 @@ def add_book_to_reading_list(
         with open(book_paths, "w") as f:
             json.dump(books, f, indent=2)
 
-        logger.success(f"Added '{title}' by {author} to your reading list!")
+        log_to_session(f"Added '{title}' by {author} to your reading list!")
 
         return f"Added '{title}' by {author} to your reading list!"
     except Exception as e:
-        logger.error(f"Error adding book: {str(e)}")
+        log_to_session(f"Error adding book: {str(e)}")
 
         return f"Error adding book: {str(e)}"
 
@@ -159,13 +159,13 @@ def mark_book_read(
         with open(book_paths, "w") as f:
             json.dump(books, f, indent=2)
 
-        logger.success(
+        log_to_session(
             f"Marked '{title}' by {author} as read! {f'Rated {rating}/10. ' if rating else ''}Nice work!"
         )
         return f"Marked '{title}' by {author} as read! {f'Rated {rating}/10. ' if rating else ''}Nice work!"
 
     except Exception as e:
-        logger.error(f"Error marking book as read: {str(e)}")
+        log_to_session(f"Error marking book as read: {str(e)}")
         return f"Error marking book as read: {str(e)}"
 
 
@@ -183,7 +183,7 @@ def search_book(title: str, author: str = "") -> str:
     """
     api_url = "https://openlibrary.org/search.json"
     params = {"title": title}
-    logger.info(f"Searching Open Library for book: {title} (Author: {author})")
+    log_to_session(f"Searching Open Library for book: {title} (Author: {author})")
     if author:
         params["author"] = author
 
@@ -192,15 +192,15 @@ def search_book(title: str, author: str = "") -> str:
         data = response.json()
 
         if data.get("numFound", 0) > 0:
-            logger.success(f"Open Library returned the following books {data}")
+            log_to_session(f"Open Library returned the following books {data}")
 
             return f"Found matches: {json.dumps(data)}"
         else:
-            logger.error("Book not found")
+            log_to_session("Book not found")
             return (
                 f"Book '{title}' not found. Error: {data.get('Error', 'Unknown error')}"
             )
 
     except Exception as e:
-        logger.error(f"Error searching for book: {str(e)}")
+        log_to_session(f"Error searching for book: {str(e)}")
         return f"Error searching for book: {str(e)}"

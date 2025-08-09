@@ -6,7 +6,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.utils.config_loader import load_config
 import json
 from datetime import datetime
-from loguru import logger
+from src.utils.callback_hanlder_subagents import log_to_session
 
 
 @tool
@@ -37,7 +37,7 @@ def add_sleep_data(
         "notes": notes,
     }
 
-    logger.info(f"Adding new sleep entry: {new_sleep_entry}")
+    log_to_session(f"Adding new sleep entry: {new_sleep_entry}")
 
     data["sleep_sessions"].append(new_sleep_entry)
 
@@ -45,16 +45,16 @@ def add_sleep_data(
         with open(sleep_dir, "w") as file:
             json.dump(data, file, indent=4)
 
-        logger.info(f"Sleep data written to {sleep_dir}")
+        log_to_session(f"Sleep data written to {sleep_dir}")
         last_week_end_str = data["weekly_summary"][-1]["week_end"]
         last_week_end = datetime.strptime(last_week_end_str, "%Y-%m-%d")
         if (datetime.now() - last_week_end).days >= 7:
-            logger.info("Weekly summary needs to be updated.")
+            log_to_session("Weekly summary needs to be updated.")
             return f"Sleep data added {new_sleep_entry}. But weekly summary is not updated. Please run the weekly summary tool to update it."
 
         return f"Sleep data added: {new_sleep_entry}"
     except Exception as e:
-        logger.error(f"Error writing to sleep tracking file: {e}")
+        log_to_session(f"Error writing to sleep tracking file: {e}")
         return f"Error adding sleep data. {e}"
 
 
@@ -73,10 +73,10 @@ def get_sleep_data() -> str:
             data = json.load(file)
         return json.dumps(data, indent=4)
     except FileNotFoundError:
-        logger.error(f"Sleep tracking file not found at {sleep_dir}")
+        log_to_session(f"Sleep tracking file not found at {sleep_dir}")
         return "Sleep tracking file not found."
     except json.JSONDecodeError:
-        logger.error("Error decoding JSON from sleep tracking file.")
+        log_to_session("Error decoding JSON from sleep tracking file.")
         return "Error decoding sleep tracking data."
 
 
@@ -117,14 +117,14 @@ def update_weekly_summary(
             "average_quality": average_quality,
             "notes": notes,
         }
-        logger.info(f"Updating weekly summary: {new_weekly_summary}")
+        log_to_session(f"Updating weekly summary: {new_weekly_summary}")
         data["weekly_summary"].append(new_weekly_summary)
 
         with open(sleep_dir, "w") as file:
             json.dump(data, file, indent=4)
-        logger.success(f"Weekly summary updated: {new_weekly_summary}")
+        log_to_session(f"Weekly summary updated: {new_weekly_summary}")
 
         return f"Weekly summary updated: {new_weekly_summary}"
     except Exception as e:
-        logger.error(f"Error updating weekly summary: {e}")
+        log_to_session(f"Error updating weekly summary: {e}")
         return f"Error updating weekly summary. {e}"

@@ -2,12 +2,12 @@ import sys
 from pathlib import Path
 
 sys.path.append(Path(__file__).parent.parent)
-from loguru import logger
 from strands import tool
 
 from agents.file_search_agent import FileSearchAgent
 from agents.google_calendar_agent import CalendarAgent
 from agents.github_agent import GitHubAgent
+from utils.callback_hanlder_subagents import log_to_session
 
 
 @tool(
@@ -27,17 +27,17 @@ def file_search_agent_query(question: str) -> str:
     Returns:
         Union[str, Dict[str, Any]]: The agent's response, which could be a string or structured output
     """
-    logger.info(f"Querying file search agent with question: {question}")
+    log_to_session(f"Querying file search agent with question: {question}")
 
     try:
         agent = FileSearchAgent()
         response = agent.query(question)
-        logger.success("File search agent query completed successfully")
+        log_to_session("File search agent query completed successfully")
         return response
 
     except Exception as e:
         error_msg = f"Error querying file search agent: {str(e)}"
-        logger.error(error_msg)
+        log_to_session(error_msg)
         return error_msg
 
 
@@ -60,14 +60,14 @@ def google_calendar_agent_query(query: str) -> str:
         str: The agent's response regarding calendar operations
     """
     try:
-        logger.info(f"Querying calendar agent with: {query}")
+        log_to_session(f"Querying calendar agent with: {query}")
         agent = CalendarAgent()
         response = agent.query(query)
-        logger.success("Calendar agent query completed successfully")
+        log_to_session("Calendar agent query completed successfully")
         return str(response)
     except Exception as e:
         error_msg = f"Error querying calendar agent: {str(e)}"
-        logger.error(error_msg)
+        log_to_session(error_msg)
         return error_msg
 
 
@@ -90,12 +90,12 @@ def github_agent_query(query: str) -> str:
         str: The agent's response regarding GitHub operations
     """
     try:
-        logger.info(f"Querying GitHub agent with: {query}")
+        log_to_session(f"Querying GitHub agent with: {query}")
         agent = GitHubAgent()
         response = agent.query(query)
-        logger.success("GitHub agent query completed successfully")
+        log_to_session("GitHub agent query completed successfully")
         return str(response)
     except Exception as e:
         error_msg = f"Error querying GitHub agent: {str(e)}"
-        logger.error(error_msg)
+        log_to_session(error_msg)
         return error_msg

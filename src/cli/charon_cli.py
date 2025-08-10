@@ -104,6 +104,11 @@ class CharonCLI:
         )
         help_table.add_row("⚙️ Control", "help • audio on/off • clear • exit")
 
+        help_table.add_row(
+            "⚒️ Start config Wizard: ",
+            "exit the process and run 'uv run charon.py setup'",
+        )
+
         console.print("\n")
         console.print(help_table)
         console.print(
@@ -116,14 +121,18 @@ class CharonCLI:
             self.show_help_panel()
             return True
         elif user_input.lower() in ["audio off", "mute"]:
+            if self.user_preferences.get("audio", True):
+                self.agent = BigBossOrchestratorAgent(silent=True)
+
             self.user_preferences["audio"] = False
             console.print("🔇 Audio disabled")
-            self.agent = BigBossOrchestratorAgent(silent=True)
+
             return True
         elif user_input.lower() in ["audio on", "unmute"]:
+            if self.user_preferences.get("audio", False):
+                self.agent = BigBossOrchestratorAgent()
             self.user_preferences["audio"] = True
             console.print("🔊 Audio enabled")
-            self.agent = BigBossOrchestratorAgent()
             initialize_tts()
             console.print("[dim]🔊 TTS system initialized[/dim]")
             return True
@@ -239,31 +248,9 @@ def setup():
     if not Path("config/project-config.yaml").exists():
         console.print("[yellow]⚠️  Configuration file not found[/yellow]")
         console.print("I'll help you create one...")
-        # Interactive config creation
+        console.print("Please follow the prompts to set up your project configuration.")
 
     console.print("✅ Setup complete! Run 'charon chat' to get started.")
-
-
-@app.command()
-def agents():
-    """List available agents and their capabilities"""
-    agents_table = Table(title="Available Agents")
-    agents_table.add_column("Agent", style="cyan")
-    agents_table.add_column("Purpose", style="white")
-    agents_table.add_column("Example Commands", style="dim")
-
-    agents_table.add_row(
-        "📋 Task", "Work & Development", "Analyze project, schedule coding"
-    )
-    agents_table.add_row(
-        "🎭 Home", "Leisure & Entertainment", "Movie night, book recommendations"
-    )
-    agents_table.add_row("📅 Calendar", "Time Management", "Check schedule, block time")
-    agents_table.add_row(
-        "🐙 GitHub", "Repository Management", "Check issues, create PRs"
-    )
-
-    console.print(agents_table)
 
 
 if __name__ == "__main__":

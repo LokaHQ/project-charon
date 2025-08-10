@@ -91,8 +91,10 @@ def load_config(config_path: str = "") -> Config:
     )
     recommender_agent_config = RecommenderAgentConfig(
         model=recommender_model_config,
-        youtube_directory=raw_config["recommender_agent"]["youtube_channels_file"],
-        substack_directory=raw_config["recommender_agent"]["substack_newsletters_file"],
+        youtube_channels_file=raw_config["recommender_agent"]["youtube_channels_file"],
+        substack_newsletters_file=raw_config["recommender_agent"][
+            "substack_newsletters_file"
+        ],
     )
 
     home_model_config = ModelConfig(

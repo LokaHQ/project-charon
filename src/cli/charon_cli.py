@@ -15,12 +15,26 @@ from rich.prompt import Prompt, Confirm
 from rich import box
 from rich.align import Align
 from rich.table import Table
+import yaml
 
 # Add the project root to Python path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.agents.big_boss_orchestrator_agent import BigBossOrchestratorAgent
 from src.utils.charon_ascii_art import CHARON_ART_ASCII, THE_FARRYMANS_ASSISTANT_ASCII
 from src.utils.tts_callback_handler import initialize_tts
+from src.schemas.config_schema import (
+    Config,
+    FilesAgentConfig,
+    HomeAgentConfig,
+    TaskAgentConfig,
+    CalendarAgentConfig,
+    GitHubAgentConfig,
+    ModelConfig,
+    BooksAgentConfig,
+    MoviesAgentConfig,
+    RecommenderAgentConfig,
+    BigBossOrchestratorAgentConfig,
+)
 
 # Initialize rich console and typer app
 console = Console()
@@ -105,8 +119,7 @@ class CharonCLI:
         help_table.add_row("⚙️ Control", "help • audio on/off • clear • exit")
 
         help_table.add_row(
-            "⚒️ Start config Wizard: ",
-            "exit the process and run 'uv run charon.py setup'",
+            "⚒️Config Wizard", "exit the process and run 'uv run charon.py setup'"
         )
 
         console.print("\n")
@@ -131,6 +144,7 @@ class CharonCLI:
         elif user_input.lower() in ["audio on", "unmute"]:
             if self.user_preferences.get("audio", False):
                 self.agent = BigBossOrchestratorAgent()
+
             self.user_preferences["audio"] = True
             console.print("🔊 Audio enabled")
             initialize_tts()
@@ -200,9 +214,7 @@ def chat(
 
         # Initialize TTS if audio is enabled
         if cli.user_preferences.get("audio", True):
-            console.status("[bold magenta]Initializing TTS...", spinner="dots")
             initialize_tts()
-            console.print("[dim]🔊 TTS system initialized[/dim]")
 
         # Main loop with better error handling
         while True:
@@ -249,6 +261,132 @@ def setup():
         console.print("[yellow]⚠️  Configuration file not found[/yellow]")
         console.print("I'll help you create one...")
         console.print("Please follow the prompts to set up your project configuration.")
+
+    console.print("Write your root directory for the files agent:")
+    root_directory = Prompt.ask(
+        "[bold white]Root Directory[/bold white]",
+        default="home/petar/Documents",
+    )
+
+    console.print(f"Root directory set to: {root_directory}")
+
+    console.print("Do you want to use the same model for all agents? (y/n)")
+    use_default_model = Confirm.ask(
+        "[bold white]Use same model for all agents?[/bold white]",
+        default=True,
+    )
+
+    if use_default_model:
+        console.print("What model do you want to use for all agents?")
+        console.print(
+            "Examples: \n"
+            "- us.anthropic.claude-sonnet-4-20250514-v1:0 \n"
+            "- openrouter/mistralai/devstral-small"
+        )
+
+        console.print(
+            " If not using Anthropic, it is recommended to not use the same model for all agents. For eg use devstral-medium for the orchestrators."
+        )
+        model_id = Prompt.ask(
+            "[bold white]Model ID[/bold white]",
+            default="us.anthropic.claude-sonnet-4-20250514-v1:0",
+        )
+        console.print(f"Model ID set to: {model_id}")
+
+    elif not use_default_model:
+        console.print(
+            "You can set different models for each agent later in the config file."
+        )
+        model_id = None
+
+    console.print("Write github username for the GitHub agent:")
+    github_username = Prompt.ask(
+        "[bold white]GitHub Username[/bold white]",
+        default="PetarKalinovski",
+    )
+    console.print(f"GitHub username set to: {github_username}")
+
+    config = Config(
+        files_agent=FilesAgentConfig(
+            root_directory=root_directory,
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            ),
+        ),
+        calendar_agent=CalendarAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            )
+        ),
+        task_agent=TaskAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            )
+        ),
+        github_agent=GitHubAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            ),
+            github_username=github_username,
+        ),
+        books_agent=BooksAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            ),
+            book_list_file="data/book_list.json",
+        ),
+        movies_agent=MoviesAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            ),
+            movie_list_file="data/movie_and_show.json",
+        ),
+        recommender_agent=RecommenderAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            ),
+            substack_newsletters_file="data/substack_newsletters.json",
+            youtube_channels_file="data/youtube_channels.json",
+        ),
+        home_agent=HomeAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            )
+        ),
+        big_boss_orchestrator_agent=BigBossOrchestratorAgentConfig(
+            model=ModelConfig(
+                model_id=model_id
+                if (use_default_model and model_id is not None)
+                else "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            ),
+            sleep_tracking_file="data/sleep_tracking.json",
+        ),
+    )
+
+    # Save the config to a YAML file
+    config_path = Path("config/project-config-generated.yaml")
+
+    yaml_config = yaml.dump(config.model_dump(), sort_keys=False)
+
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(config_path, "w") as f:
+        f.write(yaml_config)
 
     console.print("✅ Setup complete! Run 'charon chat' to get started.")
 

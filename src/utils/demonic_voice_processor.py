@@ -132,7 +132,7 @@ class DemonicVoiceProcessor:
 
         elif intensity == "medium":
             # Noticeable demonic quality
-            audio = self.pitch_shift(audio, 0.75)  # Lower pitch
+            audio = self.pitch_shift(audio, 0.85)
             audio = self.add_reverb(audio, decay=0.3, mix=0.4)
             audio = self.add_distortion(audio, drive=1.5, mix=0.1)
             audio = self.add_chorus(audio, mix=0.2)

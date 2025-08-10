@@ -81,11 +81,11 @@ class RecommenderAgentConfig(BaseModel):
         ...,
         description="Model configuration for recommender agent (e.g., 'openrouter/deepseek/deepseek-r1')",
     )
-    substack_directory: str = Field(
+    substack_newsletters_file: str = Field(
         ...,
         description="Directory where Substack newsletters are stored",
     )
-    youtube_directory: str = Field(
+    youtube_channels_file: str = Field(
         ...,
         description="Directory where YouTube channels are stored",
     )

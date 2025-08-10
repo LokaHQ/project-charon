@@ -25,11 +25,9 @@ def tts_callback_handler(**kwargs):
 
                     rprint("\n [bold dark_magenta]💀🛶 Charon:[/bold dark_magenta]")
 
-                    # Use the singleton TTS manager
                     if tts_manager.is_available():
                         tts_manager.speak(text)
                     else:
-                        # Fallback to text-only if TTS fails
                         rprint(text)
 
         if "current_tool_use" in kwargs and kwargs["current_tool_use"].get("name"):
@@ -94,11 +92,5 @@ def silent_callback_handler(**kwargs):
                     rprint(f"[dim red]Debug: Error parsing tool input: {e}[/dim red]")
 
 
-# Optional: Pre-initialize TTS at module load (uncomment if you want immediate initialization)
 def initialize_tts():
-    """Call this at startup if you want to pre-load TTS"""
     global tts_manager
-    if tts_manager.is_available():
-        rprint("[green]✅ TTS pre-initialized successfully[/green]")
-    else:
-        rprint("[yellow]⚠️ TTS initialization failed, will use text-only mode[/yellow]")

@@ -158,7 +158,6 @@ class TTSManager:
                         # Display text immediately
                         rprint(f"{formatted_part}")
 
-                        # Play audio chunk
                         sd.play(demonic_audio, 24000)
                         sd.wait()
 

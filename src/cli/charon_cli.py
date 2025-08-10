@@ -35,6 +35,8 @@ from src.schemas.config_schema import (
     RecommenderAgentConfig,
     BigBossOrchestratorAgentConfig,
 )
+from strands.session.file_session_manager import FileSessionManager
+import json
 
 # Initialize rich console and typer app
 console = Console()
@@ -77,30 +79,6 @@ class CharonCLI:
         console.print(panel)
         console.print()
 
-        def show_help_panel(self):
-            """Show what users can do"""
-            help_table = Table(show_header=False, box=box.MINIMAL)
-            help_table.add_column("Category", style="bold cyan", width=15)
-            help_table.add_column("Examples", style="white")
-
-            help_table.add_row(
-                "📋 Work Tasks",
-                "Analyze my project • Schedule coding time • GitHub issues",
-            )
-            help_table.add_row(
-                "🎭 Leisure", "What should I watch? • Recommend a book • YouTube videos"
-            )
-            help_table.add_row(
-                "📅 Planning", "When am I free? • Block focus time • Schedule meeting"
-            )
-            help_table.add_row("⚙️ Control", "help • audio on/off • clear • exit")
-
-            console.print("\n")
-            console.print(help_table)
-            console.print(
-                "\n[dim]💡 Tip: Just describe what you need in natural language[/dim]"
-            )
-
     def show_help_panel(self):
         """Show what users can do"""
         help_table = Table(show_header=False, box=box.MINIMAL)
@@ -116,10 +94,12 @@ class CharonCLI:
         help_table.add_row(
             "📅 Planning", "When am I free? • Block focus time • Schedule meeting"
         )
-        help_table.add_row("⚙️ Control", "help • audio on/off • clear • exit")
-
+        help_table.add_row("⚙️ Control", "help • audio on/off • clear • exit • status •")
         help_table.add_row(
-            "⚒️Config Wizard", "exit the process and run 'uv run charon.py setup'"
+            "👥 Sessions", "sessions/show sessions • charon-switch-session <session_id>"
+        )
+        help_table.add_row(
+            "⚒️ Config Wizard", "exit the process and run 'uv run charon.py setup'"
         )
 
         console.print("\n")
@@ -135,15 +115,21 @@ class CharonCLI:
             return True
         elif user_input.lower() in ["audio off", "mute"]:
             if self.user_preferences.get("audio", True):
-                self.agent = BigBossOrchestratorAgent(silent=True)
+                session_id = self.agent.get_session_id()
+                session_manager = FileSessionManager(session_id=session_id)
+
+                self.agent = BigBossOrchestratorAgent(
+                    session_manager=session_manager, silent=True
+                )
 
             self.user_preferences["audio"] = False
             console.print("🔇 Audio disabled")
-
             return True
         elif user_input.lower() in ["audio on", "unmute"]:
             if self.user_preferences.get("audio", False):
-                self.agent = BigBossOrchestratorAgent()
+                session_id = self.agent.get_session_id()
+                session_manager = FileSessionManager(session_id=session_id)
+                self.agent = BigBossOrchestratorAgent(session_manager=session_manager)
 
             self.user_preferences["audio"] = True
             console.print("🔊 Audio enabled")
@@ -157,7 +143,78 @@ class CharonCLI:
         elif user_input.lower() == "status":
             self.show_status()
             return True
+
+        elif user_input.lower() in ["sessions", "show sessions"]:
+            self.show_sessions()
+            return True
+
+        elif user_input.lower().startswith("charon-switch-session "):
+            session_id = user_input.split("charon-switch-session ")[-1].strip()
+            self.change_session(session_id)
+            return True
         return False
+
+    def show_sessions(self):
+        """Show all active sessions"""
+        session_table = Table(title="All Sessions")
+        session_table.add_column("Session ID", style="cyan")
+        session_table.add_column("Description", style="green")
+
+        # Load sessions from file
+        path_to_sessions = (
+            Path(__file__).parent.parent.parent
+            / "data"
+            / "sessions"
+            / "session_ids.json"
+        )
+        try:
+            with open(path_to_sessions) as f:
+                sessions = json.load(f)
+            for session in sessions:
+                session_table.add_row(session["session_id"], session["description"])
+        except FileNotFoundError:
+            console.print("[red]No sessions found[/red]")
+            return
+
+        console.print("\n[bold] Here are all sessions:[/bold]")
+
+        console.print(session_table)
+
+        console.print("Active session:")
+        if self.agent is None:
+            console.print("[red]No active session[/red]")
+        console.print(f"[bold]Session ID:[/bold] {self.agent.get_session_id()}")
+
+        console.print(
+            "to change sessions use the command 'charon-switch-session <session_id>'"
+        )
+
+    def change_session(self, session_id: str):
+        """Change to a different session"""
+        path_to_sessions = (
+            Path(__file__).parent.parent.parent
+            / "data"
+            / "sessions"
+            / "session_ids.json"
+        )
+        try:
+            with open(path_to_sessions) as f:
+                sessions = json.load(f)
+
+            for session in sessions:
+                if session["session_id"] == session_id:
+                    session_manager = FileSessionManager(session_id=session_id)
+                    self.agent = BigBossOrchestratorAgent(
+                        session_manager=session_manager
+                    )
+                    console.print(
+                        f"[bold green]Switched to session:[/bold green] {session_id}"
+                    )
+                    return
+
+            console.print(f"[red]Session ID {session_id} not found[/red]")
+        except FileNotFoundError:
+            console.print("[red]No sessions file found[/red]")
 
     def show_status(self):
         """Show system status"""
@@ -166,22 +223,21 @@ class CharonCLI:
         status_table.add_column("Status", style="green")
 
         # Check each agent's availability
-        status_table.add_row("Task Agent", "✅ Ready")
-        status_table.add_row("Home Agent", "✅ Ready")
-        status_table.add_row("Calendar", "✅ Connected")
-        status_table.add_row("GitHub", "✅ Connected")
+        if self.agent:
+            status_table.add_row("Big Boss Orchestrator Agent", "✅ Active")
+            status_table.add_row("Model", f"[bold]{self.agent.model.model_id}[/bold]")
+            status_table.add_row(
+                "Session Id",
+                f"[bold]{self.agent.get_session_id()}[/bold]",
+            )
+        else:
+            status_table.add_row("Big Boss Orchestrator Agent", "❌ Inactive")
+
         status_table.add_row(
             "Audio", "🔊 On" if self.user_preferences.get("audio", True) else "🔇 Off"
         )
 
         console.print(status_table)
-
-    def get_user_input_with_history(self) -> str:
-        """Enhanced input with better UX"""
-        try:
-            return Prompt.ask("[bold white]💬 You", console=console)
-        except KeyboardInterrupt:
-            return "exit"
 
 
 @app.command()
@@ -202,12 +258,6 @@ def chat(
             cli.display_banner()
             cli.show_help_panel()
 
-        with console.status("[bold magenta]Initializing Charon...", spinner="dots"):
-            if cli.user_preferences.get("audio", True):
-                cli.agent = BigBossOrchestratorAgent()
-            else:
-                cli.agent = BigBossOrchestratorAgent(silent=True)
-
         console.print(
             "🛶 [bold magenta]Ready![/bold magenta] What would you like to do?\n"
         )
@@ -219,7 +269,7 @@ def chat(
         # Main loop with better error handling
         while True:
             try:
-                user_input = cli.get_user_input_with_history()
+                user_input = Prompt.ask("[bold white]💬 You", console=console)
 
                 if user_input.lower() in ["exit", "quit", "bye"]:
                     if Confirm.ask("Ready to disembark?"):
@@ -230,7 +280,15 @@ def chat(
                 if cli.handle_command(user_input):
                     continue
 
-                # Process actual queries
+                if not cli.agent:
+                    with console.status(
+                        "[bold magenta]Initializing Charon...", spinner="dots"
+                    ):
+                        if cli.user_preferences.get("audio", True):
+                            cli.agent = BigBossOrchestratorAgent()
+                        else:
+                            cli.agent = BigBossOrchestratorAgent(silent=True)
+
                 cli.agent.query(user_input)
 
             except KeyboardInterrupt:
@@ -251,7 +309,7 @@ def chat(
 @app.command()
 def setup():
     """Interactive setup wizard"""
-    console.print("🛶 [bold magenta]Charon Setup Wizard[/bold magenta]\n")
+    console.print("🛶 [bold magenta]Charon Setup Wizard 🧙‍♂️[/bold magenta]\n")
 
     # Check for required files/configs
     console.print("Checking configuration...")
@@ -388,7 +446,11 @@ def setup():
     with open(config_path, "w") as f:
         f.write(yaml_config)
 
-    console.print("✅ Setup complete! Run 'charon chat' to get started.")
+    console.print(
+        "✅ Setup complete! Run 'charon chat' to get started. If you want to change the config manually, edit the file at:",
+        style="bold green",
+    )
+    console.print(config_path, style="bold green")
 
 
 if __name__ == "__main__":

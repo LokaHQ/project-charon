@@ -28,12 +28,12 @@ def add_substack_newsletter_to_monitor(
         str: Confirmation message.
     """
     config = load_config()
-    if not config.recommender_agent.substack_directory:
+    if not config.recommender_agent.substack_newsletters_file:
         log_to_session(
-            "Substack newsletters directory is not configured in the project config."
+            "Substack newsletters file is not configured in the project config."
         )
-        return "Substack newsletters directory is not configured in the project config."
-    path_url = config.recommender_agent.substack_directory
+        return "Substack newsletters file is not configured in the project config."
+    path_url = config.recommender_agent.substack_newsletters_file
     try:
         with open(path_url) as file:
             newsletters = json.load(file)
@@ -67,14 +67,14 @@ def get_all_newsletters() -> list:
         list: List of Substack newsletter URLs.
     """
     config = load_config()
-    if not config.recommender_agent.substack_directory:
+    if not config.recommender_agent.substack_newsletters_file:
         log_to_session(
             "Substack newsletters directory is not configured in the project config."
         )
         return [
             "Substack newsletters directory is not configured in the project config."
         ]
-    path_url = config.recommender_agent.substack_directory
+    path_url = config.recommender_agent.substack_newsletters_file
 
     try:
         with open(path_url) as file:
@@ -144,12 +144,10 @@ def get_all_monitored_youtube_channels() -> list:
         list: List of YouTube channel URLs.
     """
     config = load_config()
-    if not config.recommender_agent.youtube_directory:
-        log_to_session(
-            "YouTube channels directory is not configured in the project config."
-        )
-        return ["YouTube channels directory is not configured in the project config."]
-    path_url = config.recommender_agent.youtube_directory
+    if not config.recommender_agent.youtube_channels_file:
+        log_to_session("YouTube channels file is not configured in the project config.")
+        return ["YouTube channels file is not configured in the project config."]
+    path_url = config.recommender_agent.youtube_channels_file
 
     try:
         with open(path_url) as file:
@@ -174,13 +172,13 @@ def add_youtube_channel_to_monitor(channel_url: str, note_about_channel: str) ->
         str: Confirmation message.
     """
     config = load_config()
-    if not config.recommender_agent.youtube_directory:
+    if not config.recommender_agent.youtube_channels_file:
         log_to_session(
             "YouTube channels directory is not configured in the project config."
         )
         return "YouTube channels directory is not configured in the project config."
 
-    path_url = config.recommender_agent.youtube_directory
+    path_url = config.recommender_agent.youtube_channels_file
 
     try:
         with open(path_url) as file:

@@ -94,9 +94,16 @@ class AgentAbstract(ABC):
         else:
             raise ValueError(f"Unsupported model type: {self.model_id}")
 
+    def set_session_manager(self):
+        """
+        Return the session manager for this agent.
+        """
+        return None
+
     def _initialize_agent(self):
         """Initialize the agent with tools, model, and conversation manager."""
         tools = self.get_tools()
+        session_manager = self.set_session_manager()
 
         if self.callback_handler:
             self.agent = Agent(
@@ -105,6 +112,7 @@ class AgentAbstract(ABC):
                 conversation_manager=SlidingWindowConversationManager(window_size=10),
                 system_prompt=self.get_prompt(),
                 callback_handler=self.callback_handler,
+                session_manager=session_manager if session_manager else None,
             )
         else:
             self.agent = Agent(

@@ -21,7 +21,7 @@ import yaml
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from src.agents.big_boss_orchestrator_agent import BigBossOrchestratorAgent
 from src.utils.charon_ascii_art import CHARON_ART_ASCII, THE_FARRYMANS_ASSISTANT_ASCII
-from src.utils.tts_callback_handler import initialize_tts
+from src.utils.tts_callback_handler import initialize_tts, change_tts_voice
 from src.schemas.config_schema import (
     Config,
     FilesAgentConfig,
@@ -94,12 +94,16 @@ class CharonCLI:
         help_table.add_row(
             "📅 Planning", "When am I free? • Block focus time • Schedule meeting"
         )
-        help_table.add_row("⚙️ Control", "help • audio on/off • clear • exit • status •")
+        help_table.add_row("⚙️ Control", "help • clear • exit • status •")
         help_table.add_row(
             "👥 Sessions", "sessions/show sessions • charon-switch-session <session_id>"
         )
         help_table.add_row(
             "⚒️ Config Wizard", "exit the process and run 'uv run charon.py setup'"
+        )
+        help_table.add_row(
+            "🎧 Audio Settings",
+            "audio on/off • charon-switch-voice <voice> [light|medium|heavy|none|heart]",
         )
 
         console.print("\n")
@@ -152,6 +156,23 @@ class CharonCLI:
             session_id = user_input.split("charon-switch-session ")[-1].strip()
             self.change_session(session_id)
             return True
+
+        elif user_input.lower().startswith("charon-switch-voice "):
+            voice = user_input.split("charon-switch-voice ")[-1].strip()
+            if voice not in ["light", "medium", "heavy", "none", "heart"]:
+                console.print(
+                    "[red]Invalid voice. Use: light, medium, heavy, none, or heart[/red]"
+                )
+                return True
+            elif self.user_preferences.get("audio", True) is False:
+                console.print(
+                    "[yellow]Audio is disabled. Enable it with 'audio on'[/yellow]"
+                )
+                return True
+            else:
+                change_tts_voice(voice)
+                console.print(f"[dim]👻 Voice changed to: {voice}[/dim]")
+                return True
         return False
 
     def show_sessions(self):
@@ -256,7 +277,7 @@ def chat(
         # Minimal startup
         if not minimal:
             cli.display_banner()
-            cli.show_help_panel()
+            # cli.show_help_panel()
 
         console.print(
             "🛶 [bold magenta]Ready![/bold magenta] What would you like to do?\n"
@@ -447,7 +468,7 @@ def setup():
         f.write(yaml_config)
 
     console.print(
-        "✅ Setup complete! Run 'charon chat' to get started. If you want to change the config manually, edit the file at:",
+        "✅ Setup complete! Run 'uv run charon.py chat' to get started. If you want to change the config manually, edit the file at:",
         style="bold green",
     )
     console.print(config_path, style="bold green")

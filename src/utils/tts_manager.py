@@ -52,11 +52,14 @@ class TTSManager:
             self.voice_blend = None
 
     def set_demonic_intensity(self, intensity: str):
-        if intensity in ["light", "medium", "heavy"]:
+        """Set the demonic intensity for voice effects"""
+        if intensity in ["light", "medium", "heavy", "none", "heart"]:
             self.demonic_intensity = intensity
             rprint(f"[dim]👹 Demonic intensity set to: {intensity}[/dim]")
         else:
-            rprint("[yellow]⚠️ Invalid intensity. Use: light, medium, or heavy[/yellow]")
+            rprint(
+                "[yellow]⚠️ Invalid intensity. Use: light, medium, heavy, none, or heart[/yellow]"
+            )
 
     def is_available(self) -> bool:
         """Check if TTS is available"""
@@ -92,43 +95,57 @@ class TTSManager:
             def audio_generator():
                 """Generate audio chunks in background thread"""
                 try:
-                    generator = self.pipeline(
-                        text_readable,
-                        voice=self.voice_blend,
-                        speed=speed,
-                        split_pattern=r"\n+",
-                    )
+                    if self.demonic_intensity == "heart":
+                        generator = self.pipeline(
+                            text_readable,
+                            voice="af_heart",
+                            speed=speed,
+                            split_pattern=r"\n+",
+                        )
+                    else:
+                        generator = self.pipeline(
+                            text_readable,
+                            voice=self.voice_blend,
+                            speed=speed,
+                            split_pattern=r"\n+",
+                        )
 
-                    # Process each chunk as it comes from the generator
-                    for i, (gs, ps, audio) in enumerate(generator):
-                        try:
-                            # Apply demonic effects to this chunk
-                            demonic_audio = self.voice_processor.apply_demonic_effects(
-                                audio, self.demonic_intensity
-                            )
+                        # Process each chunk as it comes from the generator
+                        for i, (gs, ps, audio) in enumerate(generator):
+                            try:
+                                # Apply demonic effects to this chunk
+                                demonic_audio = (
+                                    self.voice_processor.apply_demonic_effects(
+                                        audio, self.demonic_intensity
+                                    )
+                                )
 
-                            # Put in queue with text part
-                            formatted_part = (
-                                formatted_parts[i] if i < len(formatted_parts) else ""
-                            )
-                            audio_queue.put(
-                                (formatted_part, demonic_audio, False)
-                            )  # False = not the last chunk
+                                # Put in queue with text part
+                                formatted_part = (
+                                    formatted_parts[i]
+                                    if i < len(formatted_parts)
+                                    else ""
+                                )
+                                audio_queue.put(
+                                    (formatted_part, demonic_audio, False)
+                                )  # False = not the last chunk
 
-                        except Exception as e:
-                            rprint(
-                                f"[yellow]⚠️ Effect failed for chunk {i}: {e}[/yellow]"
-                            )
-                            # Fallback to normal audio
-                            audio_np = (
-                                audio.detach().cpu().numpy()
-                                if hasattr(audio, "detach")
-                                else np.array(audio)
-                            )
-                            formatted_part = (
-                                formatted_parts[i] if i < len(formatted_parts) else ""
-                            )
-                            audio_queue.put((formatted_part, audio_np, False))
+                            except Exception as e:
+                                rprint(
+                                    f"[yellow]⚠️ Effect failed for chunk {i}: {e}[/yellow]"
+                                )
+                                # Fallback to normal audio
+                                audio_np = (
+                                    audio.detach().cpu().numpy()
+                                    if hasattr(audio, "detach")
+                                    else np.array(audio)
+                                )
+                                formatted_part = (
+                                    formatted_parts[i]
+                                    if i < len(formatted_parts)
+                                    else ""
+                                )
+                                audio_queue.put((formatted_part, audio_np, False))
 
                     # Signal completion
                     audio_queue.put((None, None, True))  # True = last chunk marker

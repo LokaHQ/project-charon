@@ -94,3 +94,8 @@ def silent_callback_handler(**kwargs):
 
 def initialize_tts():
     global tts_manager
+
+
+def change_tts_voice(voice: str):
+    global tts_manager
+    tts_manager.set_demonic_intensity(voice)

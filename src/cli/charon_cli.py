@@ -6,6 +6,7 @@ Guiding you through the complexities of daily life with intelligent task orchest
 
 import sys
 from pathlib import Path
+from typing import Optional
 
 import typer
 from rich.console import Console
@@ -16,6 +17,7 @@ from rich import box
 from rich.align import Align
 from rich.table import Table
 import yaml
+
 
 # Add the project root to Python path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -35,8 +37,15 @@ from src.schemas.config_schema import (
     RecommenderAgentConfig,
     BigBossOrchestratorAgentConfig,
 )
+from src.utils.elevenlabs_stt_processors import ElevenLabsSTTProcessor
+
 from strands.session.file_session_manager import FileSessionManager
 import json
+from dotenv import load_dotenv
+import asyncio
+
+
+load_dotenv()
 
 # Initialize rich console and typer app
 console = Console()
@@ -53,6 +62,7 @@ class CharonCLI:
         self.agent = None
         self.session_context = {}
         self.user_preferences = {}
+        self.stt = False
 
     def display_banner(self):
         """Display the mythological Charon-themed banner"""
@@ -104,6 +114,10 @@ class CharonCLI:
         help_table.add_row(
             "🎧 Audio Settings",
             "audio on/off • charon-switch-voice <voice> [light|medium|heavy|none|heart]",
+        )
+        help_table.add_row(
+            "🎙️ Voice Input",
+            "charon-listen to toggle voice input mode on/off",
         )
 
         console.print("\n")
@@ -173,6 +187,21 @@ class CharonCLI:
                 change_tts_voice(voice)
                 console.print(f"[dim]👻 Voice changed to: {voice}[/dim]")
                 return True
+
+        elif user_input.lower().startswith("charon-listen"):
+            if self.stt:
+                self.stt = False
+                console.print(
+                    "[dim]🎙️  Voice input mode disabled. You can type your input now.[/dim]"
+                )
+                return True
+            else:
+                self.stt = True
+                console.print(
+                    "[dim]🎙️  Voice input mode enabled. Speak clearly to record your input.[/dim]"
+                )
+                return True
+
         return False
 
     def show_sessions(self):
@@ -204,6 +233,7 @@ class CharonCLI:
         console.print("Active session:")
         if self.agent is None:
             console.print("[red]No active session[/red]")
+            return
         console.print(f"[bold]Session ID:[/bold] {self.agent.get_session_id()}")
 
         console.print(
@@ -246,7 +276,7 @@ class CharonCLI:
         # Check each agent's availability
         if self.agent:
             status_table.add_row("Big Boss Orchestrator Agent", "✅ Active")
-            status_table.add_row("Model", f"[bold]{self.agent.model.model_id}[/bold]")
+            status_table.add_row("Model", f"[bold]{self.agent.model_id}[/bold]")
             status_table.add_row(
                 "Session Id",
                 f"[bold]{self.agent.get_session_id()}[/bold]",
@@ -259,6 +289,69 @@ class CharonCLI:
         )
 
         console.print(status_table)
+
+    def run_stt_chat(self) -> Optional[str]:
+        stt = ElevenLabsSTTProcessor()
+        try:
+            console.print(
+                "🎙️  [bold green]Starting voice input recording...[/bold green]"
+            )
+            voice_input = asyncio.run(stt.get_voice_input_elevenlabs_smart())
+
+            if voice_input:
+                console.print(f"[bold white]💬 You: {voice_input}[/bold white]")
+                return voice_input
+
+            else:
+                console.print("⚠️  [yellow]No voice input detected[/yellow]")
+                return None
+
+        except KeyboardInterrupt:
+            console.print("\n[yellow]Voice input recording stopped[/yellow]")
+            self.stt = False
+            return None
+
+        except Exception as e:
+            console.print(f"❌ [red]Error: {e}[/red]")
+
+    def run_chat(self):
+        """Run the interactive chat loop"""
+        while True:
+            try:
+                if not self.stt:
+                    user_input = Prompt.ask("[bold white]💬 You", console=console)
+
+                    if user_input.lower() in ["exit", "quit", "bye"]:
+                        if Confirm.ask("Ready to disembark?"):
+                            console.print(
+                                "[bold magenta] 🛶 Farewell, traveler![/bold magenta]"
+                            )
+                            break
+                        continue
+
+                    if self.handle_command(user_input):
+                        continue
+
+                if self.stt:
+                    user_input = self.run_stt_chat()
+
+                if not self.agent:
+                    with console.status(
+                        "[bold magenta]Initializing Charon...", spinner="dots"
+                    ):
+                        if self.user_preferences.get("audio", True):
+                            self.agent = BigBossOrchestratorAgent()
+                        else:
+                            self.agent = BigBossOrchestratorAgent(silent=True)
+
+                self.agent.query(user_input)
+
+            except KeyboardInterrupt:
+                console.print("\n[yellow]Use 'exit' to quit gracefully[/yellow]")
+                continue
+            except Exception as e:
+                console.print(f"[red]❌ Something went wrong: {str(e)}[/red]")
+                console.print("[dim]Try rephrasing your request or type 'help'[/dim]")
 
 
 @app.command()
@@ -282,49 +375,16 @@ def chat(
         console.print(
             "🛶 [bold magenta]Ready![/bold magenta] What would you like to do?\n"
         )
-
-        # Initialize TTS if audio is enabled
         if cli.user_preferences.get("audio", True):
             initialize_tts()
 
-        # Main loop with better error handling
-        while True:
-            try:
-                user_input = Prompt.ask("[bold white]💬 You", console=console)
-
-                if user_input.lower() in ["exit", "quit", "bye"]:
-                    if Confirm.ask("Ready to disembark?"):
-                        break
-                    continue
-
-                # Handle special commands
-                if cli.handle_command(user_input):
-                    continue
-
-                if not cli.agent:
-                    with console.status(
-                        "[bold magenta]Initializing Charon...", spinner="dots"
-                    ):
-                        if cli.user_preferences.get("audio", True):
-                            cli.agent = BigBossOrchestratorAgent()
-                        else:
-                            cli.agent = BigBossOrchestratorAgent(silent=True)
-
-                cli.agent.query(user_input)
-
-            except KeyboardInterrupt:
-                console.print("\n[yellow]Use 'exit' to quit gracefully[/yellow]")
-                continue
-            except Exception as e:
-                console.print(f"[red]❌ Something went wrong: {str(e)}[/red]")
-                console.print("[dim]Try rephrasing your request or type 'help'[/dim]")
+        cli.run_chat()
 
     except Exception as e:
         console.print(f"[red]Failed to start Charon: {str(e)}[/red]")
         raise typer.Exit(1)
 
     # Graceful exit
-    console.print("\n🛶 [magenta]Safe travels![/magenta]\n")
 
 
 @app.command()

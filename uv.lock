@@ -98,18 +98,6 @@ wheels = [
 ]
 
 [[package]]
-name = "amazon-transcribe"
-version = "0.6.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "awscrt" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0b/3a/f2bf812e8716d25fad092a21e2f01377d00c15e3a1e9be97d132a1d33850/amazon_transcribe-0.6.4.tar.gz", hash = "sha256:89770100e88446a451241f49ad14820bf3113f4545df0a32e82c73455928432c", size = 33687 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/c9/d13edab9292aff456f10250bc9d2ad7584de69d35878574e24631efac630/amazon_transcribe-0.6.4-py3-none-any.whl", hash = "sha256:ba5a27616106e659f031c975da12c331665d122d2518e2018a88b308e66fdee7", size = 41118 },
-]
-
-[[package]]
 name = "annotated-types"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -697,6 +685,23 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b2/9d/c3b43da9515bd270df0f80548d9944e389870713cc1fe2b8fb35fe2bcefd/docstring_parser-0.17.0.tar.gz", hash = "sha256:583de4a309722b3315439bb31d64ba3eebada841f2e2cee23b99df001434c912", size = 27442 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/55/e2/2537ebcff11c1ee1ff17d8d0b6f4db75873e3b0fb32c2d4a2ee31ecb310a/docstring_parser-0.17.0-py3-none-any.whl", hash = "sha256:cf2569abd23dce8099b300f9b4fa8191e9582dda731fd533daf54c4551658708", size = 36896 },
+]
+
+[[package]]
+name = "elevenlabs"
+version = "2.9.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pydantic-core" },
+    { name = "requests" },
+    { name = "typing-extensions" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/61/452764eb9684cd639d16f01772847df5cf79ac10b7ccdcc8bac54c835240/elevenlabs-2.9.2.tar.gz", hash = "sha256:f767e7e567450106fa3f4abe770c507b1ece0b13363110a18b9946315a0eab93", size = 277596 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/11/66eefe3fcbe7ce2353d67223fb70885f1cf074dd69272315e016976a427a/elevenlabs-2.9.2-py3-none-any.whl", hash = "sha256:c7ca04a774bc3801b7d15027810181435f9fd6a93cc707ae0d32a7ce57ac8e59", size = 797980 },
 ]
 
 [[package]]
@@ -2408,8 +2413,8 @@ name = "project-charon"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "amazon-transcribe" },
     { name = "aws-sdk-bedrock-runtime" },
+    { name = "elevenlabs" },
     { name = "google-api-python-client" },
     { name = "google-auth" },
     { name = "google-auth-oauthlib" },
@@ -2448,8 +2453,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "amazon-transcribe", specifier = ">=0.6.4" },
     { name = "aws-sdk-bedrock-runtime", specifier = ">=0.0.2" },
+    { name = "elevenlabs", specifier = ">=2.9.2" },
     { name = "google-api-python-client", specifier = ">=2.177.0" },
     { name = "google-auth", specifier = ">=2.40.3" },
     { name = "google-auth-oauthlib", specifier = ">=1.2.2" },
